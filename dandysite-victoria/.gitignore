@@ -1,0 +1,14 @@
+# WordPress
+*.log
+.DS_Store
+Thumbs.db
+
+# Dev tools
+node_modules/
+*.map
+.sass-cache/
+
+# Editor files
+.vscode/
+.idea/
+*.sublime-workspace

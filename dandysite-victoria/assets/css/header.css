@@ -1,0 +1,523 @@
+/**
+ * Dandysite Victoria — Header Styles
+ * 
+ * Uses CSS custom properties for all color/visual values so that
+ * ds-theme-customizations (or any child theme) can override via :root.
+ *
+ * Header neutral defaults (project overrides these via CSS variables):
+ *   Solid header:    dark background, light text
+ *   Overlay header:  transparent → light text + light logo
+ *   Revealed state:  configurable via body class (header-reveal-solid / header-reveal-transparent)
+ */
+
+/* ================================================================
+   CSS CUSTOM PROPERTIES — Header Defaults
+   Override these in your project's stylesheet.
+   ================================================================ */
+:root {
+    /* Solid header */
+    --header-solid-bg:          #1a1a1a;
+    --header-solid-color:       #ffffff;
+    --header-solid-border:      transparent;
+    --header-solid-shadow:      0 2px 8px rgba(0, 0, 0, 0.15);
+
+    /* Overlay header — initial transparent state */
+    --header-overlay-bg:        transparent;
+    --header-overlay-color:     #ffffff;
+
+    /* Revealed state — solid */
+    --header-revealed-solid-bg:     #1a1a1a;
+    --header-revealed-solid-color:  #ffffff;
+    --header-revealed-solid-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+
+    /* Revealed state — transparent/glassy */
+    --header-revealed-glass-bg:     rgba(0, 0, 0, 0.55);
+    --header-revealed-glass-blur:   12px;
+    --header-revealed-glass-color:  #ffffff;
+
+    /* Common */
+    --header-height:            70px;
+    --header-height-mobile:     60px;
+    --header-padding-v:         0;
+    --header-padding-h:         2rem;
+    --header-z-index:           1000;
+    --header-transition:        transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                                background-color 0.3s ease,
+                                box-shadow 0.3s ease,
+                                color 0.3s ease;
+
+    /* Logo */
+    --header-logo-height:       44px;
+    --header-logo-height-mobile: 36px;
+
+    /* Nav links */
+    --header-nav-gap:           2rem;
+    --header-nav-font-size:     0.95rem;
+    --header-nav-font-weight:   500;
+    --header-nav-letter-spacing: 0.02em;
+
+    /* Mobile menu */
+    --header-mobile-menu-bg:    #1a1a1a;
+    --header-mobile-menu-color: #ffffff;
+    --header-mobile-menu-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+}
+
+
+/* ================================================================
+   BASE HEADER STRUCTURE
+   ================================================================ */
+.site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--header-z-index);
+    height: var(--header-height);
+    transition: var(--header-transition);
+    will-change: transform, background-color;
+}
+
+/* Inner container — flex row */
+.header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    gap: 1em;
+    padding: var(--header-padding-v) var(--header-padding-h);
+    max-width: var(--container-max-width, 1400px);
+    margin: 0 auto;
+}
+
+/* Push content below fixed header via explicit spacer div.
+   The spacer is output in header.php and hidden on overlay pages.
+   This is more reliable than padding-top on site-main. */
+.header-spacer {
+    height: var(--header-height);
+    flex-shrink: 0;
+}
+
+body.header-style-overlay .header-spacer {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .site-header {
+        height: var(--header-height-mobile);
+    }
+    .header-spacer {
+        height: var(--header-height-mobile);
+    }
+}
+
+
+/* ================================================================
+   SOLID HEADER STYLE
+   ================================================================ */
+.header-style-solid .site-header {
+    background-color: var(--header-solid-bg);
+    color: var(--header-solid-color);
+    border-bottom: 1px solid var(--header-solid-border);
+    box-shadow: var(--header-solid-shadow);
+}
+
+.header-style-solid .site-header .header-nav a,
+.header-style-solid .site-header .site-logo-text {
+    color: var(--header-active-color);
+}
+
+/* ================================================================
+   OVERLAY / TRANSPARENT HEADER STYLE
+   ================================================================ */
+.header-style-overlay .site-header {
+    background-color: var(--header-overlay-bg);
+    box-shadow: none;
+}
+
+.header-style-overlay .site-header .header-nav a,
+.header-style-overlay .site-header .site-logo-text {
+    color: var(--header-active-color);
+}
+
+
+/* ================================================================
+   SCROLL STATES
+   ================================================================ */
+
+/* Hidden — slides up off screen */
+.site-header.header--hidden {
+    transform: translateY(-100%);
+}
+
+/* Revealed — scroll-reveal-solid (dark bg) */
+.header-reveal-solid .site-header.header--revealed {
+    background-color: var(--header-revealed-solid-bg);
+    color: var(--header-revealed-solid-color);
+    box-shadow: var(--header-revealed-solid-shadow);
+}
+
+.header-reveal-solid .site-header.header--revealed .header-nav a,
+.header-reveal-solid .site-header.header--revealed .site-logo-text {
+    color: var(--header-active-color);
+}
+
+/* On revealed solid: logo goes back to normal (not inverted) */
+.header-reveal-solid .site-header.header--revealed .site-logo {
+    filter: none;
+}
+
+/* Scrolled past threshold — subtle shadow boost on solid headers */
+.header-style-solid .site-header.header--scrolled {
+    box-shadow: var(--header-revealed-solid-shadow);
+}
+
+
+/* ================================================================
+   LOGO
+   ================================================================ */
+.site-logo-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.site-logo {
+    height: var(--header-logo-height);
+    max-height: var(--header-logo-height);
+    width: auto;
+    display: block;
+    transition: filter 0.3s ease;
+}
+
+/* On transparent/overlay header — invert logo to white */
+.header-style-overlay .site-header:not(.header--revealed) .site-logo,
+.header-reveal-transparent .site-header.header--revealed .site-logo {
+    filter: brightness(0) invert(1);
+}
+
+/* On solid revealed state — ensure logo is back to normal */
+.header-reveal-solid .site-header.header--revealed .site-logo {
+    filter: none;
+}
+
+.site-logo-text {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    transition: color 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .site-logo {
+        height: var(--header-logo-height-mobile);
+        max-height: var(--header-logo-height-mobile);
+        width: auto;
+    }
+}
+
+
+/* ================================================================
+   DESKTOP NAVIGATION
+   ================================================================ */
+.header-nav {
+    display: flex;
+    align-items: center;
+}
+
+.header-nav ul {
+    display: flex;
+    align-items: center;
+    gap: var(--header-nav-gap);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.header-nav ul li {
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+.header-nav a {
+    display: block;
+    font-size: var(--header-nav-font-size);
+    font-weight: var(--header-nav-font-weight);
+    letter-spacing: var(--header-nav-letter-spacing);
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+    white-space: nowrap;
+}
+
+.header-nav a:hover {
+    opacity: 0.7;
+}
+
+/* Sub-menus (dropdown) */
+.header-nav li:has(ul) {
+    position: relative;
+}
+
+.header-nav li ul {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    flex-direction: column;
+    gap: 0;
+    min-width: 180px;
+    background-color: var(--header-solid-bg);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    padding: 0.5rem 0;
+    z-index: 10;
+}
+
+.header-nav li:hover > ul,
+.header-nav li:focus-within > ul {
+    display: flex;
+}
+
+.header-nav li ul a {
+    padding: 0.5rem 1rem;
+    color: #ffffff !important; /* always light on dropdown */
+    font-size: 0.875rem;
+}
+
+.header-nav li ul a:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+
+/* ================================================================
+   HAMBURGER BUTTON
+   ================================================================ */
+.header-hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 28px;
+    height: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: calc(var(--header-z-index) + 10);
+    flex-shrink: 0;
+}
+
+/* Solid header — set active color */
+.header-style-solid .site-header {
+    --header-active-color: var(--header-solid-color);
+}
+
+/* Overlay header — set active color */
+.header-style-overlay .site-header {
+    --header-active-color: var(--header-overlay-color);
+}
+
+/* When revealed as solid */
+.header-reveal-solid .site-header.header--revealed {
+    --header-active-color: var(--header-revealed-solid-color);
+}
+
+/* When revealed as transparent/glassy */
+.header-reveal-transparent .site-header.header--revealed {
+    --header-active-color: var(--header-revealed-glass-color);
+}
+
+.hamburger-bar {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: var(--header-active-color, #ffffff);
+    border-radius: 2px;
+    transition: transform 0.3s ease, opacity 0.3s ease, background-color 0.3s ease;
+    transform-origin: center;
+}
+
+/* Animated to X when menu open */
+.mobile-menu-open .hamburger-bar:nth-child(1) {
+    transform: translateY(9px) rotate(45deg);
+}
+.mobile-menu-open .hamburger-bar:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+}
+.mobile-menu-open .hamburger-bar:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
+}
+
+
+/* ================================================================
+   MOBILE NAV STATE — controlled by JS class on .site-header
+   ================================================================ */
+
+/* When header is in mobile-nav mode */
+.site-header.header--mobile-nav .header-hamburger {
+    display: flex;
+}
+
+.site-header.header--mobile-nav .header-nav {
+    /* Hide desktop nav — shown via slide-in panel below */
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: min(320px, 85vw);
+    height: 100dvh;
+    background-color: var(--header-mobile-menu-bg);
+    color: var(--header-mobile-menu-color);
+    box-shadow: var(--header-mobile-menu-shadow);
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem;
+    transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: calc(var(--header-z-index) + 5);
+    overflow-y: auto;
+}
+
+.site-header.header--mobile-nav .header-nav ul {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    width: 100%;
+}
+
+.site-header.header--mobile-nav .header-nav a {
+    color: var(--header-mobile-menu-color) !important;
+    font-size: 1.25rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    width: 100%;
+}
+
+/* Mobile sub-menus */
+.site-header.header--mobile-nav .header-nav li ul {
+    display: flex;
+    position: static;
+    box-shadow: none;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 0;
+    padding: 0 0 0 1rem;
+}
+
+.site-header.header--mobile-nav .header-nav li ul a {
+    font-size: 1rem;
+    padding: 0.5rem 0;
+}
+
+/* Open state — slide in from right */
+.site-header.header--mobile-nav.mobile-menu-open .header-nav {
+    transform: translateX(0);
+}
+
+/* Overlay behind open mobile menu — on body so it covers full viewport.
+   z-index sits above page content but below the header and slide-out nav. */
+body.mobile-menu-open::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: calc(var(--header-z-index) - 1);
+}
+
+/* Keep hamburger above the dim */
+.site-header.header--mobile-nav.mobile-menu-open .header-hamburger {
+    position: relative;
+}
+
+/* When desktop, ensure hamburger is hidden */
+.site-header.header--desktop-nav .header-hamburger {
+    display: none;
+}
+
+.site-header.header--desktop-nav .header-nav {
+    /* Ensure desktop nav is visible/reset */
+    position: static;
+    width: auto;
+    height: auto;
+    background: transparent;
+    box-shadow: none;
+    transform: none;
+    padding: 0;
+    flex-direction: row;
+    overflow: visible;
+}
+
+
+/* ================================================================
+   ACCESSIBILITY
+   ================================================================ */
+
+/* Skip link */
+.skip-link {
+    position: absolute;
+    top: -100%;
+    left: 1rem;
+    z-index: calc(var(--header-z-index) + 100);
+    padding: 0.5rem 1rem;
+    background: #000;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 0 0 4px 4px;
+    font-size: 0.875rem;
+    transition: top 0.2s;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* Focus styles for nav links */
+.header-nav a:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+    border-radius: 2px;
+}
+
+.header-hamburger:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 4px;
+    border-radius: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .site-header,
+    .header-nav,
+    .hamburger-bar,
+    .site-logo,
+    .site-logo-text {
+        transition: none;
+    }
+}
+
+
+/* ================================================================
+   ADMIN BAR OFFSET
+   WP admin bar is fixed at top:0 and adds margin-top to <html>.
+   We only need to push our fixed header down to sit below the bar.
+   The spacer height stays as normal header height — WP handles the rest.
+   ================================================================ */
+.admin-bar .site-header {
+    top: 32px;
+}
+
+@media screen and (max-width: 782px) {
+    .admin-bar .site-header {
+        top: 46px;
+    }
+}
+
+
+/* ================================================================
+   OVERLAY PAGES — REMOVE SITE-MAIN PADDING
+   ================================================================ */
+body.header-style-overlay .site-main {
+    padding-top: 0;
+}

@@ -1,0 +1,380 @@
+/**
+ * Footer Styles
+ * dandysite-victoria theme
+ *
+ * Body classes from footer-settings.php:
+ *   .footer-layout-left    → widgets left-justified, content-width columns
+ *   .footer-layout-center  → everything centered, stacked vertically
+ *   .footer-layout-spaced  → widgets spread full width
+ *   .footer-show-logo      → show logo (hidden by default)
+ *   .footer-dark           → dark background variant
+ */
+
+
+/* ================================================================
+   CSS VARIABLES
+   Neutral defaults — work standalone without any plugin.
+   Plugin overrides these with project-specific brand values.
+   ================================================================ */
+.site-footer {
+    --footer-bg:            var(--color-background, #F3E9D7);
+    --footer-border:        var(--color-border, #D4C8B5);
+    --footer-text:          var(--color-text, #2A2420);
+    --footer-text-muted:    var(--color-text-muted, #7A706A);
+    --footer-link:          var(--color-text, #2A2420);
+    --footer-link-hover:    var(--color-wine-red, #7A1F2B);
+    --footer-title:         var(--color-text, #2A2420);
+    --footer-divider:       var(--color-border, #D4C8B5);
+    --footer-logo-opacity:  0.85;
+
+    --footer-colophon-bg:   var(--color-surface, #ffffff);
+    --footer-colophon-text: var(--color-text-muted, #7A706A);
+}
+
+/* Dark mode defaults — plugin overrides with brand-specific values */
+body.footer-dark .site-footer {
+    --footer-bg:            #1e1a17;
+    --footer-border:        rgba(255, 255, 255, 0.1);
+    --footer-text:          #e8dfd0;
+    --footer-text-muted:    #b0a090;
+    --footer-link:          #e8dfd0;
+    --footer-link-hover:    #c6a64b;
+    --footer-title:         #f3e9d7;
+    --footer-divider:       rgba(255, 255, 255, 0.12);
+    --footer-logo-opacity:  0.9;
+
+    --footer-colophon-bg:   #161310;
+    --footer-colophon-text: #7a706a;
+}
+
+
+/* ================================================================
+   BASE FOOTER
+   ================================================================ */
+.site-footer {
+    background-color: var(--footer-bg);
+    color: var(--footer-text);
+    border-top: 1px solid var(--footer-border);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Ensure ALL text inside footer respects the variables */
+.site-footer p,
+.site-footer li,
+.site-footer span,
+.site-footer td,
+.site-footer address {
+    color: var(--footer-text);
+}
+
+.site-footer h1,
+.site-footer h2,
+.site-footer h3,
+.site-footer h4,
+.site-footer h5,
+.site-footer h6 {
+    color: var(--footer-title);
+}
+
+.site-footer a {
+    color: var(--footer-link);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.site-footer a:hover {
+    color: var(--footer-link-hover);
+}
+
+
+/* ================================================================
+   FOOTER MAIN
+   ================================================================ */
+.footer-main {
+    padding: var(--spacing-2xl, 4rem) 0 var(--spacing-xl, 3rem);
+}
+
+/* Default: logo left, widgets filling the rest */
+.footer-primary {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-2xl, 4rem);
+}
+
+
+/* ================================================================
+   FOOTER LOGO — hidden by default, shown via .footer-show-logo
+   ================================================================ */
+.footer-logo {
+    display: none;
+    flex-shrink: 0;
+    width: 160px;
+}
+
+body.footer-show-logo .footer-logo {
+    display: block;
+}
+
+.footer-logo__img {
+    max-width: 100%;
+    height: auto;
+    opacity: var(--footer-logo-opacity);
+    transition: opacity 0.2s;
+}
+
+.footer-logo__img:hover {
+    opacity: 1;
+}
+
+.footer-logo__text {
+    font-family: var(--font-heading, 'EB Garamond', Georgia, serif);
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--footer-title);
+}
+
+/* Dark mode: invert dark logo */
+body.footer-dark .footer-logo__img {
+    filter: brightness(0) invert(1);
+    opacity: var(--footer-logo-opacity);
+}
+
+
+/* ================================================================
+   FOOTER WIDGETS — primary row
+   ================================================================ */
+.footer-widgets {
+    display: flex;
+    flex: 1;
+    gap: var(--spacing-xl, 3rem);
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+/* Widgets are only as wide as their content by default */
+.footer-widget {
+    flex: 0 0 auto;
+    min-width: 0;
+    text-align: left;
+}
+
+.footer-widget__title {
+    font-family: var(--font-heading, 'EB Garamond', Georgia, serif);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--footer-title);
+    margin: 0 0 var(--spacing-sm, 0.5rem);
+    padding-bottom: var(--spacing-sm, 0.5rem);
+    border-bottom: 2px solid var(--footer-divider);
+}
+
+.footer-widget ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-widget ul li {
+    margin-bottom: var(--spacing-xs, 0.25rem);
+}
+
+.footer-widget ul li a {
+    font-size: 0.9rem;
+    color: var(--footer-text-muted);
+}
+
+.footer-widget ul li a:hover {
+    color: var(--footer-link-hover);
+}
+
+.footer-widget p {
+    font-size: 0.9rem;
+    color: var(--footer-text-muted);
+    line-height: 1.6;
+    margin: 0 0 var(--spacing-sm, 0.5rem);
+}
+
+
+/* ================================================================
+   LAYOUT VARIANTS
+   ================================================================ */
+
+/* LEFT (default) — widgets huddle left, gaps between them */
+body.footer-layout-left .footer-widgets {
+    justify-content: flex-start;
+}
+
+/* SPACED — widgets pushed to edges and evenly distributed */
+body.footer-layout-spaced .footer-widgets {
+    justify-content: space-between;
+    width: 100%;
+}
+
+/* CENTER — entire footer-primary stacks vertically and centers.
+   Logo (if shown) sits above widgets, both centered. */
+body.footer-layout-center .footer-primary {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+body.footer-layout-center .footer-logo {
+    width: auto;
+    max-width: 160px;
+    margin: 0 auto;
+}
+
+body.footer-layout-center .footer-widgets {
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
+
+body.footer-layout-center .footer-widget {
+    text-align: center;
+}
+
+body.footer-layout-center .footer-widget__title {
+    text-align: center;
+}
+
+body.footer-layout-center .footer-widget ul {
+    text-align: center;
+}
+
+body.footer-layout-center .footer-widget p {
+    text-align: center;
+}
+
+
+/* ================================================================
+   SECONDARY WIDGET AREA — centered by default
+   ================================================================ */
+.footer-secondary {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-xl, 3rem);
+    padding-top: var(--spacing-xl, 3rem);
+    margin-top: var(--spacing-xl, 3rem);
+    border-top: 1px solid var(--footer-divider);
+}
+
+.footer-secondary .footer-widget {
+    flex: 0 1 auto;
+    text-align: center;
+}
+
+.footer-secondary .footer-widget__title {
+    color: var(--footer-title);
+}
+
+.footer-secondary .footer-widget p,
+.footer-secondary .footer-widget ul li a {
+    color: var(--footer-text-muted);
+}
+
+
+/* ================================================================
+   FOOTER NAV
+   ================================================================ */
+.footer-nav {
+    padding: var(--spacing-lg, 2rem) 0 0;
+    margin-top: var(--spacing-lg, 2rem);
+    border-top: 1px solid var(--footer-divider);
+}
+
+.footer-nav__menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md, 1rem) var(--spacing-lg, 2rem);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-nav__menu a {
+    font-size: 0.85rem;
+    color: var(--footer-text-muted);
+    letter-spacing: 0.04em;
+}
+
+.footer-nav__menu a:hover {
+    color: var(--footer-link-hover);
+}
+
+
+/* ================================================================
+   COLOPHON (copyright bar)
+   ================================================================ */
+.site-colophon {
+    background-color: var(--footer-colophon-bg);
+    border-top: 1px solid var(--footer-divider);
+    padding: var(--spacing-md, 1rem) 0;
+}
+
+.site-colophon p {
+    font-size: 0.8rem;
+    color: var(--footer-colophon-text);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.site-colophon a {
+    color: var(--footer-colophon-text);
+}
+
+.site-colophon a:hover {
+    color: var(--footer-link-hover);
+}
+
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media (max-width: 768px) {
+    .footer-primary {
+        flex-direction: column;
+        gap: var(--spacing-xl, 3rem);
+        align-items: center;
+    }
+
+    .footer-logo {
+        width: auto;
+        max-width: 140px;
+    }
+
+    .footer-widgets {
+        gap: var(--spacing-lg, 2rem);
+    }
+}
+
+@media (max-width: 600px) {
+    .footer-main {
+        padding: var(--spacing-xl, 3rem) 0 var(--spacing-lg, 2rem);
+    }
+
+    .footer-widgets {
+        flex-direction: column;
+        gap: var(--spacing-lg, 2rem);
+    }
+
+    .footer-widget {
+        flex: none;
+        width: 100%;
+    }
+
+    .footer-secondary {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .footer-nav__menu {
+        flex-direction: column;
+        gap: var(--spacing-sm, 0.5rem);
+    }
+}

@@ -1,0 +1,131 @@
+/* =============================================================
+   Editor Styles — dandysite-victoria base theme
+   Applies to the Gutenberg block editor only (never front end).
+   Uses CSS custom properties with neutral fallbacks so any child
+   theme / plugin that defines brand vars gets them automatically.
+   ============================================================= */
+
+/* ── Base wrapper ─────────────────────────────────────────── */
+.editor-styles-wrapper {
+  font-family: inherit;
+  line-height: 1.6;
+  color: inherit;
+}
+
+.wp-block {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+
+/* ── Block spacing ────────────────────────────────────────── */
+/* Generous vertical breathing room between sibling blocks     */
+.editor-styles-wrapper .wp-block + .wp-block {
+  margin-top: 1.5rem;
+}
+
+/* A bit more room above/below group blocks so nesting reads clearly */
+.editor-styles-wrapper .wp-block-group {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+
+/* ── Group / section outlines ─────────────────────────────── */
+/* Dotted border shows block boundaries without visual noise   */
+.editor-styles-wrapper .wp-block-group {
+  outline: 2px dotted rgba(0, 0, 0, 0.18);
+  outline-offset: 3px;
+  border-radius: 2px;
+  position: relative; /* anchor for ::before labels */
+  padding-top: 1.75rem !important; /* room for the badge */
+}
+
+
+/* ── Column outlines ──────────────────────────────────────── */
+/* Subtler — one level down, so columns don't compete with groups */
+.editor-styles-wrapper .wp-block-column {
+  outline: 1px dashed rgba(0, 0, 0, 0.12);
+  outline-offset: 2px;
+  position: relative;
+  padding: 0.5rem !important;
+}
+
+
+/* ── Class-name badges ────────────────────────────────────── */
+/* Floats at the top-left of any group that carries a notable class.
+   Font-size and colors kept neutral — no brand dependency.       */
+.editor-styles-wrapper .wp-block-group::before {
+  content: '';               /* default: empty — overridden below */
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 10px;
+  font-family: monospace;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  padding: 3px 7px;
+  border-radius: 0 0 3px 0;
+  pointer-events: none;
+  z-index: 1;
+  /* neutral defaults — overridden per-class below */
+  background: rgba(0, 0, 0, 0.09);
+  color: rgba(0, 0, 0, 0.55);
+}
+
+/* Only show the badge when a recognised class is present */
+.editor-styles-wrapper .wp-block-group.section--alt::before {
+  content: 'section--alt';
+  background: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.50);
+}
+
+.editor-styles-wrapper .wp-block-group.fullwidth::before {
+  content: 'fullwidth';
+  background: rgba(80, 40, 0, 0.10);
+  color: rgba(80, 40, 0, 0.55);
+}
+
+.editor-styles-wrapper .wp-block-group.section--narrow::before {
+  content: 'section--narrow';
+  background: rgba(0, 60, 100, 0.08);
+  color: rgba(0, 60, 100, 0.50);
+}
+
+.editor-styles-wrapper .wp-block-group.section::before {
+  content: 'section';
+  background: rgba(0, 0, 0, 0.07);
+  color: rgba(0, 0, 0, 0.45);
+}
+
+/* section + section--alt together — show combined label */
+.editor-styles-wrapper .wp-block-group.section.section--alt::before {
+  content: 'section · alt';
+  background: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.50);
+}
+
+
+/* ── section--alt background tint ────────────────────────── */
+/* Uses brand var if defined, falls back to neutral light gray */
+.editor-styles-wrapper .wp-block-group.section--alt {
+  background-color: var(--color-background-alt, #f0f0f0) !important;
+}
+
+
+/* ── fullwidth tint ───────────────────────────────────────── */
+/* Subtly distinguishes fullwidth blocks from normal-width     */
+.editor-styles-wrapper .wp-block-group.fullwidth {
+  background-color: var(--color-background, #fafafa) !important;
+  outline-color: rgba(80, 40, 0, 0.20);
+}
+
+
+/* ── Columns wrapper outline ──────────────────────────────── */
+/* The columns block itself — slightly stronger than child columns */
+.editor-styles-wrapper .wp-block-columns {
+  outline: 1px dotted rgba(0, 0, 0, 0.15);
+  outline-offset: 4px;
+}
