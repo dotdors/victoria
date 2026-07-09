@@ -2,7 +2,7 @@
 /**
  * Template Part: Bio Section (Meet the Candidate)
  *
- * Expects a page called "About" or "Meet Hawk" with:
+ * Expects a page called "About" or similar, configured in Theme Settings.
  *   - Featured Image: candidate photo
  *   - Content: bio text
  *
@@ -12,7 +12,8 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-$slug = apply_filters( 'dsp_bio_page_slug', 'about' );
+$slug = get_option( 'dsp_bio_page_slug', 'about' );
+$slug = apply_filters( 'dsp_bio_page_slug', $slug ); // still filterable by site plugin
 $bio_page = get_page_by_path( $slug );
 
 // Nothing to show
@@ -25,11 +26,12 @@ $bio_link     = get_permalink( $bio_page );
 
 // Pull quote — stored as post meta 'dsp_bio_pullquote', or first blockquote in content
 $pullquote = get_post_meta( $bio_page->ID, 'dsp_bio_pullquote', true );
-$section_label = apply_filters( 'dsp_bio_section_label', __( 'About the Candidate', 'dandysite-victoria' ) );
+$section_label = get_option( 'dsp_bio_section_label', '' );
+$section_label = apply_filters( 'dsp_bio_section_label', $section_label );
 $read_more     = apply_filters( 'dsp_bio_read_more_text', __( 'Read More', 'dandysite-victoria' ) );
 ?>
 
-<section class="section-bio" id="meet-hawk">
+<section class="section-bio" id="meet-candidate">
     <div class="container">
 
         <?php if ( $bio_image ) : ?>
@@ -39,7 +41,9 @@ $read_more     = apply_filters( 'dsp_bio_read_more_text', __( 'Read More', 'dand
         <?php endif; ?>
 
         <div class="section-bio__text">
+        <?php if ( $section_label ) : ?>
             <span class="section-label"><?php echo esc_html( $section_label ); ?></span>
+        <?php endif; ?>
             <h2><?php echo esc_html( $bio_title ); ?></h2>
 
             <div class="section-bio__content">
@@ -52,9 +56,6 @@ $read_more     = apply_filters( 'dsp_bio_read_more_text', __( 'Read More', 'dand
             </blockquote>
             <?php endif; ?>
 
-            <a href="<?php echo esc_url( $bio_link ); ?>" class="btn btn--outline">
-                <?php echo esc_html( $read_more ); ?>
-            </a>
         </div>
 
     </div>

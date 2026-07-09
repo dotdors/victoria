@@ -57,11 +57,14 @@ add_action( 'add_meta_boxes', 'dsp_add_homepage_meta_box' );
 function dsp_homepage_hero_callback( $post ) {
     wp_nonce_field( 'dsp_save_homepage_hero', 'dsp_homepage_hero_nonce' );
 
-    $headline    = get_post_meta( $post->ID, 'dsp_hero_headline', true );
-    $tagline     = get_post_meta( $post->ID, 'dsp_hero_tagline', true );
-    $cta_text    = get_post_meta( $post->ID, 'dsp_hero_cta_text', true );
-    $cta_url     = get_post_meta( $post->ID, 'dsp_hero_cta_url', true );
-    $hero_height = get_post_meta( $post->ID, 'dsp_hero_height', true ) ?: '100vh';
+    $eyebrow          = get_post_meta( $post->ID, 'dsp_hero_eyebrow', true );
+    $headline         = get_post_meta( $post->ID, 'dsp_hero_headline', true );
+    $tagline          = get_post_meta( $post->ID, 'dsp_hero_tagline', true );
+    $cta_text         = get_post_meta( $post->ID, 'dsp_hero_cta_text', true );
+    $cta_url          = get_post_meta( $post->ID, 'dsp_hero_cta_url', true );
+    $hero_height      = get_post_meta( $post->ID, 'dsp_hero_height', true ) ?: '100vh';
+    $show_logo        = get_post_meta( $post->ID, 'dsp_hero_show_logo', true );
+    $logo_white       = get_post_meta( $post->ID, 'dsp_hero_logo_white', true );
     ?>
     <style>
         .dsp-hero-meta { display: grid; gap: 16px; max-width: 700px; margin-top: 8px; }
@@ -79,6 +82,28 @@ function dsp_homepage_hero_callback( $post ) {
 
         <div class="field-hint">
             <?php esc_html_e( 'These fields apply when a Hero page template is selected (Page Attributes → Template). Hero image = Featured Image.', 'dandysite-victoria' ); ?>
+        </div>
+
+        <div>
+            <label for="dsp_hero_eyebrow"><?php esc_html_e( 'Eyebrow Text', 'dandysite-victoria' ); ?></label>
+            <input type="text"
+                   id="dsp_hero_eyebrow"
+                   name="dsp_hero_eyebrow"
+                   value="<?php echo esc_attr( $eyebrow ); ?>"
+                   placeholder="<?php esc_attr_e( 'e.g. Experienced Oil & Gas Leader for Texas', 'dandysite-victoria' ); ?>">
+            <p class="description"><?php esc_html_e( 'Small label shown above the headline. Leave blank to hide.', 'dandysite-victoria' ); ?></p>
+        </div>
+
+        <div>
+            <label><?php esc_html_e( 'Logo in Hero', 'dandysite-victoria' ); ?></label>
+            <label style="font-weight:normal; display:block; margin-bottom:4px;">
+                <input type="checkbox" name="dsp_hero_show_logo" value="1" <?php checked( $show_logo, '1' ); ?>>
+                <?php esc_html_e( 'Show site logo between eyebrow and headline', 'dandysite-victoria' ); ?>
+            </label>
+            <label style="font-weight:normal; display:block;">
+                <input type="checkbox" name="dsp_hero_logo_white" value="1" <?php checked( $logo_white, '1' ); ?>>
+                <?php esc_html_e( 'Force logo to white (use on dark/photo backgrounds)', 'dandysite-victoria' ); ?>
+            </label>
         </div>
 
         <div>
@@ -157,6 +182,7 @@ function dsp_save_homepage_hero( $post_id ) {
     $allowed_heights = [ '100vh', '90vh', '85vh', '75vh', '60vh' ];
 
     $fields = [
+        'dsp_hero_eyebrow'  => 'sanitize_text_field',
         'dsp_hero_headline' => 'sanitize_text_field',
         'dsp_hero_tagline'  => 'sanitize_textarea_field',
         'dsp_hero_cta_text' => 'sanitize_text_field',
@@ -168,6 +194,10 @@ function dsp_save_homepage_hero( $post_id ) {
             update_post_meta( $post_id, $key, $sanitizer( $_POST[ $key ] ) );
         }
     }
+
+    // Checkboxes
+    update_post_meta( $post_id, 'dsp_hero_show_logo',  isset( $_POST['dsp_hero_show_logo'] )  ? '1' : '0' );
+    update_post_meta( $post_id, 'dsp_hero_logo_white', isset( $_POST['dsp_hero_logo_white'] ) ? '1' : '0' );
 
     if ( isset( $_POST['dsp_hero_height'] ) && in_array( $_POST['dsp_hero_height'], $allowed_heights, true ) ) {
         update_post_meta( $post_id, 'dsp_hero_height', $_POST['dsp_hero_height'] );
@@ -204,12 +234,15 @@ function dsp_get_hero_meta( $post_id = null ) {
     }
 
     return [
-        'headline'  => get_post_meta( $post_id, 'dsp_hero_headline', true ),
-        'tagline'   => get_post_meta( $post_id, 'dsp_hero_tagline', true ),
-        'cta_text'  => get_post_meta( $post_id, 'dsp_hero_cta_text', true ),
-        'cta_url'   => get_post_meta( $post_id, 'dsp_hero_cta_url', true ),
-        'height'    => get_post_meta( $post_id, 'dsp_hero_height', true ) ?: '100vh',
-        'has_image' => ! empty( $image_url ),
-        'image_url' => $image_url,
+        'eyebrow'    => get_post_meta( $post_id, 'dsp_hero_eyebrow', true ),
+        'headline'   => get_post_meta( $post_id, 'dsp_hero_headline', true ),
+        'tagline'    => get_post_meta( $post_id, 'dsp_hero_tagline', true ),
+        'cta_text'   => get_post_meta( $post_id, 'dsp_hero_cta_text', true ),
+        'cta_url'    => get_post_meta( $post_id, 'dsp_hero_cta_url', true ),
+        'height'     => get_post_meta( $post_id, 'dsp_hero_height', true ) ?: '100vh',
+        'show_logo'  => get_post_meta( $post_id, 'dsp_hero_show_logo', true ),
+        'logo_white' => get_post_meta( $post_id, 'dsp_hero_logo_white', true ),
+        'has_image'  => ! empty( $image_url ),
+        'image_url'  => $image_url,
     ];
 }

@@ -1,7 +1,7 @@
 <?php
 /**
- * Index / Blog Posts Page — Dandysite Victoria
- * Used when a static page is set as the posts page.
+ * Archive Template — Dandysite Victoria
+ * Handles category, tag, date, and author archives.
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -11,22 +11,35 @@ get_header(); ?>
 <div class="container archive-container">
 
     <header class="archive-header">
-        <?php if ( is_home() && ! is_front_page() ) : ?>
-            <h1 class="archive-title"><?php single_post_title(); ?></h1>
-        <?php endif; ?>
+        <?php
+        if ( is_category() ) {
+            echo '<h1 class="archive-title">' . esc_html( single_cat_title( '', false ) ) . '</h1>';
+            $cat_description = category_description();
+            if ( $cat_description ) {
+                echo '<div class="archive-description">' . wp_kses_post( $cat_description ) . '</div>';
+            }
+        } elseif ( is_tag() ) {
+            echo '<h1 class="archive-title">' . esc_html( single_tag_title( '', false ) ) . '</h1>';
+        } elseif ( is_author() ) {
+            echo '<h1 class="archive-title">' . esc_html( get_the_author() ) . '</h1>';
+        } elseif ( is_year() ) {
+            echo '<h1 class="archive-title">' . esc_html( get_the_date( 'Y' ) ) . '</h1>';
+        } elseif ( is_month() ) {
+            echo '<h1 class="archive-title">' . esc_html( get_the_date( 'F Y' ) ) . '</h1>';
+        } else {
+            the_archive_title( '<h1 class="archive-title">', '</h1>' );
+        }
+        ?>
     </header>
 
     <?php if ( have_posts() ) : ?>
 
-        <div class="news-grid">
+        <div class="news-grid archive-grid">
             <?php while ( have_posts() ) : the_post();
-
-                $publication   = get_post_meta( get_the_ID(), 'dsp_publication_name', true );
-                $ext_url       = get_post_meta( get_the_ID(), 'dsp_external_url', true );
+                $publication = get_post_meta( get_the_ID(), 'dsp_publication_name', true );
+                $ext_url     = get_post_meta( get_the_ID(), 'dsp_external_url', true );
                 $link_behavior = get_option( 'dsp_external_link_behavior', 'summary' );
-                $show_date     = apply_filters( 'dsp_show_post_date', true, get_the_ID() );
 
-                // Card link
                 if ( $ext_url && $link_behavior === 'direct' ) {
                     $card_url    = $ext_url;
                     $card_target = ' target="_blank" rel="noopener noreferrer"';
@@ -35,10 +48,8 @@ get_header(); ?>
                     $card_target = '';
                 }
 
-                // Image treatment: contain for in-the-news, cover otherwise
                 $is_news = in_category( 'in-the-news' );
                 $thumb_class = $is_news ? 'news-card__thumbnail news-card__thumbnail--contain' : 'news-card__thumbnail';
-
             ?>
             <article <?php post_class( 'news-card' ); ?>>
 
@@ -69,12 +80,12 @@ get_header(); ?>
                         </a>
                     </h3>
 
-                    <?php if ( $show_date ) : ?>
+                    <?php if ( apply_filters( 'dsp_show_post_date', true, get_the_ID() ) ) : ?>
                     <div class="news-card__date"><?php echo esc_html( get_the_date() ); ?></div>
                     <?php endif; ?>
 
                     <a href="<?php echo esc_url( $card_url ); ?>"<?php echo $card_target; ?>
-                       class="btn" style="font-size:0.8rem; padding:0.5em 1.2em; margin-top:auto;">
+                       class="btn" style="font-size:0.8rem; padding:0.5em 1.2em;">
                         <?php echo ( $ext_url && $link_behavior === 'direct' )
                             ? esc_html__( 'Read Article', 'dandysite-victoria' )
                             : esc_html__( 'Read More', 'dandysite-victoria' );

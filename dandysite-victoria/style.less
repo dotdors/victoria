@@ -11,16 +11,33 @@ Domain Path: /languages
 */
 
 // ===== LESS VARIABLES (compile-time only) =====
-// These are ONLY used to populate CSS custom properties
-// Never use these directly in styles - always use var(--property-name)
-@color-primary: #000000;
-@color-secondary: #ffffff;
-@color-accent: #ff6b35;
-@color-text: #333333;
-@color-text-light: #666666;
-@color-background: #ffffff;
-@color-surface: #f8f8f8;
-@color-border: #e0e0e0;
+// These are ONLY used to populate CSS custom properties.
+// Never use these directly in styles — always use var(--property-name).
+// Override in site plugin by redefining :root { --color-* } in site.less/site.css.
+//
+// Base palette: "Victoria"
+//   Punch Red    #e63946  — primary action / CTA
+//   Honeydew     #f1faee  — light surface / background
+//   Frosted Blue #a8dadc  — subtle accent
+//   Cerulean     #457b9d  — secondary / mid-tone
+//   Oxford Navy  #1d3557  — dark / headings / footer
+
+@color-punch-red:    #e63946;
+@color-honeydew:     #f1faee;
+@color-frosted-blue: #a8dadc;
+@color-cerulean:     #457b9d;
+@color-oxford-navy:  #1d3557;
+
+// Semantic role assignments — override these in the site plugin, not the palette vars above
+@color-primary:      @color-oxford-navy;
+@color-secondary:    @color-cerulean;
+@color-accent:       @color-punch-red;
+@color-text:         #222222;
+@color-text-light:   #555555;
+@color-background:   #ffffff;
+@color-surface:      @color-honeydew;
+@color-surface-alt:  @color-frosted-blue;
+@color-border:       #dce8ea;
 
 @font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 @font-secondary: Georgia, 'Times New Roman', serif;
@@ -49,17 +66,25 @@ Domain Path: /languages
 
 /* ===== CSS CUSTOM PROPERTIES (runtime variables) ===== */
 :root {
-  /* Colors */
-  --color-primary: @color-primary;
-  --color-secondary: @color-secondary;
-  --color-accent: @color-accent;
-  --color-text: @color-text;
-  --color-text-light: @color-text-light;
-  --color-background: @color-background;
-  --color-surface: @color-surface;
-  --color-border: @color-border;
-  --color-button-text: @color-accent;
-  --color-button-bg: @color-text-light;
+  /* Palette — full named colors available for direct reference */
+  --color-punch-red:    @color-punch-red;
+  --color-honeydew:     @color-honeydew;
+  --color-frosted-blue: @color-frosted-blue;
+  --color-cerulean:     @color-cerulean;
+  --color-oxford-navy:  @color-oxford-navy;
+
+  /* Semantic roles — override these in your site plugin */
+  --color-primary:      @color-primary;
+  --color-secondary:    @color-secondary;
+  --color-accent:       @color-accent;
+  --color-text:         @color-text;
+  --color-text-light:   @color-text-light;
+  --color-background:   @color-background;
+  --color-surface:      @color-surface;
+  --color-surface-alt:  @color-surface-alt;
+  --color-border:       @color-border;
+  --color-button-bg:    @color-accent;
+  --color-button-text:  #ffffff;
   
   /* Typography */
   --font-primary: @font-primary;

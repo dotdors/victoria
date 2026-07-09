@@ -89,6 +89,15 @@
     margin: 0 auto;
 }
 
+/* Right side group: nav + search icon + hamburger inline */
+.header-right {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: var(--header-nav-gap, 2rem);
+    flex-shrink: 0;
+}
+
 /* Push content below fixed header via explicit spacer div.
    The spacer is output in header.php and hidden on overlay pages.
    This is more reliable than padding-top on site-main. */
@@ -224,6 +233,7 @@ body.header-style-overlay .header-spacer {
 .header-nav {
     display: flex;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .header-nav ul {
@@ -520,4 +530,254 @@ body.mobile-menu-open::before {
    ================================================================ */
 body.header-style-overlay .site-main {
     padding-top: 0;
+}
+
+
+/* ================================================================
+   LOGO — ALWAYS WHITE
+   Political sites typically have a colored/dark header. Apply white
+   filter universally. Override with .site-logo { filter: none } in
+   site plugin if a specific site needs the original logo colors.
+   ================================================================ */
+.site-logo {
+    filter: brightness(0) invert(1);
+}
+
+/* Preserve the overlay/reveal logic — already white so filter: none
+   on revealed-solid is still correct (header goes light on scroll) */
+.header-reveal-solid .site-header.header--revealed .site-logo {
+    filter: none;
+}
+
+
+/* ================================================================
+   SEARCH — HEADER TOGGLE BUTTON
+   ================================================================ */
+.header-search-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+    color: #ffffff;
+    text-transform: none;
+    letter-spacing: normal;
+    font-size: inherit;
+    transition: opacity 0.2s ease;
+    z-index: calc(var(--header-z-index, 1000) + 10);
+}
+
+.header-search-toggle:hover {
+    opacity: 0.7;
+    color: #ffffff;
+    background: none;
+    border: none;
+}
+
+.header-search-toggle:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 4px;
+    border-radius: 2px;
+}
+
+.header-search-toggle svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+    fill: currentColor;
+}
+
+
+/* ================================================================
+   SEARCH — OVERLAY
+   ================================================================ */
+.search-overlay[hidden] {
+    display: none;
+}
+
+.search-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(29, 53, 87, 0.7); /* Oxford Navy tint */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    box-sizing: border-box;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.search-overlay.is-open {
+    opacity: 1;
+}
+
+body.search-overlay-open {
+    overflow: hidden;
+}
+
+/* Card */
+.search-overlay__card {
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+    background: var(--color-background, #ffffff);
+    padding: 2.5rem 3rem;
+    box-shadow: 0 8px 40px rgba(29, 53, 87, 0.25);
+    border-radius: var(--border-radius, 8px);
+    animation: searchSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+    .search-overlay__card {
+        padding: 2rem 1.5rem;
+    }
+}
+
+@keyframes searchSlideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Title */
+.search-overlay__title {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-2xl, 1.5rem);
+    font-weight: 600;
+    color: var(--color-text);
+    text-align: left;
+    margin: 0 0 1rem;
+}
+
+/* Close button */
+.search-overlay__close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    text-transform: none;
+    letter-spacing: normal;
+    color: var(--color-text-light);
+    transition: color 0.2s ease;
+}
+
+.search-overlay__close:hover {
+    color: var(--color-text);
+    background: none;
+    border: none;
+}
+
+.search-overlay__close:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+.search-overlay__close svg {
+    display: block;
+    fill: currentColor;
+    width: 18px;
+    height: 18px;
+}
+
+/* Input row */
+.search-overlay__input-wrap {
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid var(--color-border, #dce8ea);
+    gap: 0.5rem;
+    transition: border-color 0.2s ease;
+}
+
+.search-overlay__input-wrap:focus-within {
+    border-bottom-color: var(--color-accent);
+}
+
+.search-overlay__input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xl, 1.25rem);
+    font-weight: 400;
+    color: var(--color-text);
+    padding: 0.5rem 0;
+    min-width: 0;
+    width: 100%;
+}
+
+.search-overlay__input:focus,
+.search-overlay__input:focus-visible {
+    outline: none;
+    box-shadow: none;
+    border: none;
+}
+
+.search-overlay__input::-webkit-search-decoration,
+.search-overlay__input::-webkit-search-results-button,
+.search-overlay__input::-webkit-search-results-decoration {
+    display: none;
+}
+
+.search-overlay__input::placeholder {
+    color: var(--color-text-light);
+    font-style: italic;
+}
+
+/* ID beats global input[type=search] border-bottom */
+input#search-overlay-input {
+    border-bottom: none;
+}
+
+/* Submit button */
+.search-overlay__submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    text-transform: none;
+    letter-spacing: normal;
+    color: var(--color-text-light);
+    flex-shrink: 0;
+    transition: color 0.2s ease;
+}
+
+.search-overlay__submit:hover {
+    color: var(--color-accent);
+    background: none;
+    border: none;
+}
+
+.search-overlay__submit:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+.search-overlay__submit svg {
+    width: 22px;
+    height: 22px;
+    display: block;
+    fill: currentColor;
 }

@@ -2,18 +2,12 @@
 /**
  * Template Part: Issues / Positions Section
  *
- * Displays positions from the dshft_position CPT (provided by ds-[sitename] plugin).
- * Gracefully hidden when the CPT or helper function doesn't exist.
- *
- * Requires: dshft_get_positions() from ds-hawkfortexas plugin.
+ * Displays positions from the dsp_position CPT (registered in Victoria).
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-// Bail silently if the site plugin hasn't registered this CPT yet
-if ( ! function_exists( 'dshft_get_positions' ) ) return;
-
-$positions = dshft_get_positions( true ); // homepage-flagged only
+$positions = dsp_get_positions( true ); // homepage-flagged only
 if ( empty( $positions ) ) return;
 
 $section_title    = apply_filters( 'dsp_issues_title',    __( 'Issues & Positions', 'dandysite-victoria' ) );
@@ -28,10 +22,11 @@ $section_subtitle = apply_filters( 'dsp_issues_subtitle', __( 'Where I Stand', '
 
         <div class="issues-grid">
             <?php foreach ( $positions as $position ) :
-                $icon    = get_post_meta( $position->ID, 'dshft_position_icon', true );
-                $summary = get_post_meta( $position->ID, 'dshft_position_summary', true )
+                $icon    = get_post_meta( $position->ID, 'dsp_position_icon', true );
+                $summary = get_post_meta( $position->ID, 'dsp_position_summary', true )
                            ?: $position->post_excerpt;
-                $link    = get_permalink( $position );
+                $read_more_link = get_post_meta( $position->ID, 'dsp_position_link', true )
+                                  ?: get_permalink( $position );
             ?>
             <div class="issue-card">
                 <?php if ( $icon ) : ?>
@@ -50,9 +45,7 @@ $section_subtitle = apply_filters( 'dsp_issues_subtitle', __( 'Where I Stand', '
                 </p>
                 <?php endif; ?>
 
-                <a href="<?php echo esc_url( $link ); ?>" class="issue-card__link">
-                    <?php esc_html_e( 'Read More', 'dandysite-victoria' ); ?> &rarr;
-                </a>
+                <a href="<?php echo esc_url( $read_more_link ); ?>" class="issue-card__link"><?php esc_html_e( 'Read More', 'dandysite-victoria' ); ?> &rarr;</a>
             </div>
             <?php endforeach; ?>
         </div>

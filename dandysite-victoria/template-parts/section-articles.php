@@ -1,38 +1,32 @@
 <?php
 /**
- * Template Part: In the News Section
+ * Template Part: Articles / Op-Eds Section
  *
- * Displays recent posts. Respects the dsp_external_link_behavior option:
- *   'direct'  — card click goes straight to external URL (new tab)
- *   'summary' — card goes to on-site post; post has "Read at [Publication]" button (default)
+ * Shows posts from categories selected in Homepage Settings.
+ * Default: all categories except "in-the-news".
  *
- * External article fields (set via Article Details meta box):
- *   dsp_publication_name   — source label shown on card
- *   dsp_external_url       — link to original
- *   dsp_pdf_attachment_id  — downloadable PDF (shown on single post, not card)
+ * Respects dsp_external_link_behavior for external article links.
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-$post_count     = (int) get_option( 'dsp_hp_news_count', 4 );
-$section_title  = apply_filters( 'dsp_news_title',       __( 'In the News', 'dandysite-victoria' ) );
-$view_all_text  = apply_filters( 'dsp_news_view_all',    __( 'View All', 'dandysite-victoria' ) );
-$link_behavior  = get_option( 'dsp_external_link_behavior', 'summary' );
+$post_count    = (int) get_option( 'dsp_hp_articles_count', 4 );
+$section_title = apply_filters( 'dsp_articles_title', __( 'Articles & Op-Eds', 'dandysite-victoria' ) );
+$view_all_text = apply_filters( 'dsp_articles_view_all', __( 'View All Articles', 'dandysite-victoria' ) );
+$link_behavior = get_option( 'dsp_external_link_behavior', 'summary' );
 
-// Get selected categories; default to in-the-news only
-$news_cats = get_option( 'dsp_hp_news_cats', [ 'in-the-news' ] );
-if ( empty( $news_cats ) ) {
-    $news_cats = [ 'in-the-news' ];
+// Get selected categories; default to all except in-the-news
+$selected_cats = get_option( 'dsp_hp_articles_cats', [] );
+
+if ( empty( $selected_cats ) ) {
+    // Default: all categories except in-the-news
+    $all_cats = get_categories( [ 'hide_empty' => true, 'fields' => 'slugs' ] );
+    $selected_cats = array_values( array_diff( $all_cats, [ 'in-the-news' ] ) );
 }
 
-$view_all_url = '';
-$first_term = get_term_by( 'slug', $news_cats[0], 'category' );
-if ( $first_term ) {
-    $view_all_url = get_term_link( $first_term );
-}
-$view_all_url = apply_filters( 'dsp_news_view_all_url', $view_all_url ?: home_url( '/in-the-news/' ) );
+if ( empty( $selected_cats ) ) return;
 
-$news_query = new WP_Query( [
+$articles_query = new WP_Query( [
     'post_type'      => 'post',
     'post_status'    => 'publish',
     'posts_per_page' => $post_count,
@@ -41,25 +35,29 @@ $news_query = new WP_Query( [
     'tax_query'      => [[
         'taxonomy' => 'category',
         'field'    => 'slug',
-        'terms'    => $news_cats,
+        'terms'    => $selected_cats,
         'operator' => 'IN',
     ]],
 ] );
 
-if ( ! $news_query->have_posts() ) return;
+if ( ! $articles_query->have_posts() ) return;
+
+// View all URL — blog page, falling back to /blog/
+$blog_page_id = get_option( 'page_for_posts' );
+$view_all_url = $blog_page_id ? get_permalink( $blog_page_id ) : home_url( '/blog/' );
+$view_all_url = apply_filters( 'dsp_articles_view_all_url', $view_all_url );
 ?>
 
-<section class="section-news" id="news">
+<section class="section-articles" id="articles">
     <div class="container">
 
         <h2 class="section-title"><?php echo esc_html( $section_title ); ?></h2>
 
         <div class="news-grid">
-            <?php while ( $news_query->have_posts() ) : $news_query->the_post();
+            <?php while ( $articles_query->have_posts() ) : $articles_query->the_post();
                 $publication = get_post_meta( get_the_ID(), 'dsp_publication_name', true );
                 $ext_url     = get_post_meta( get_the_ID(), 'dsp_external_url', true );
 
-                // Determine card href and target based on behavior setting
                 if ( $ext_url && $link_behavior === 'direct' ) {
                     $card_url    = $ext_url;
                     $card_target = ' target="_blank" rel="noopener noreferrer"';
@@ -67,13 +65,10 @@ if ( ! $news_query->have_posts() ) return;
                     $card_url    = get_the_permalink();
                     $card_target = '';
                 }
-                $thumb_class = in_category( 'in-the-news' )
-                    ? 'news-card__thumbnail news-card__thumbnail--contain'
-                    : 'news-card__thumbnail';
             ?>
             <article class="news-card<?php echo $ext_url ? ' news-card--external' : ''; ?>">
 
-                <div class="<?php echo esc_attr( $thumb_class ); ?>">
+                <div class="news-card__thumbnail">
                     <?php if ( has_post_thumbnail() ) : ?>
                         <a href="<?php echo esc_url( $card_url ); ?>"<?php echo $card_target; ?>>
                             <?php the_post_thumbnail( 'medium', [ 'loading' => 'lazy' ] ); ?>
@@ -89,7 +84,13 @@ if ( ! $news_query->have_posts() ) return;
 
                     <?php if ( $publication ) : ?>
                     <div class="news-card__source"><?php echo esc_html( $publication ); ?></div>
-                    <?php endif; ?>
+                    <?php else :
+                        // Show category as label if no publication
+                        $cats = get_the_category();
+                        if ( ! empty( $cats ) ) : ?>
+                        <div class="news-card__source"><?php echo esc_html( $cats[0]->name ); ?></div>
+                        <?php endif;
+                    endif; ?>
 
                     <h3 class="news-card__title">
                         <a href="<?php echo esc_url( $card_url ); ?>"<?php echo $card_target; ?>>
@@ -105,7 +106,7 @@ if ( ! $news_query->have_posts() ) return;
 
                     <a href="<?php echo esc_url( $card_url ); ?>"<?php echo $card_target; ?>
                        class="btn" style="font-size:0.8rem; padding:0.5em 1.2em;">
-                        <?php echo $ext_url && $link_behavior === 'direct'
+                        <?php echo ( $ext_url && $link_behavior === 'direct' )
                             ? esc_html__( 'Read Article', 'dandysite-victoria' )
                             : esc_html__( 'Read More', 'dandysite-victoria' );
                         ?>

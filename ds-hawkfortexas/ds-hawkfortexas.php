@@ -28,13 +28,21 @@ define('DSHFT_PLUGIN_URL', plugin_dir_url(__FILE__));
  * Enqueue site-specific styles and scripts
  */
 function dshft_enqueue_assets() {
+    // Google Fonts — Barlow Condensed (headings) + Barlow (body)
+    wp_enqueue_style(
+        'dshft-fonts',
+        'https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap',
+        [],
+        null
+    );
+
     // Main site stylesheet — overrides Victoria base styles
     $css_path = DSHFT_PLUGIN_DIR . 'assets/css/site.css';
     if (file_exists($css_path)) {
         wp_enqueue_style(
             'dshft-site-style',
             DSHFT_PLUGIN_URL . 'assets/css/site.css',
-            ['dsp-style'],  // loads after Victoria base
+            ['dsp-style', 'dsp-header-style'],  // loads after both Victoria base and header CSS
             filemtime($css_path)
         );
     }
@@ -52,15 +60,6 @@ function dshft_enqueue_assets() {
     }
 }
 add_action('wp_enqueue_scripts', 'dshft_enqueue_assets');
-
-// ============================================================
-// CUSTOM POST TYPES
-// ============================================================
-// CPTs are defined in separate include files below.
-// Each CPT gets its own file for easy maintenance.
-
-require_once DSHFT_PLUGIN_DIR . 'includes/cpt-endorsements.php';
-require_once DSHFT_PLUGIN_DIR . 'includes/cpt-positions.php';
 
 // ============================================================
 // EDITOR COLOR PALETTE OVERRIDE
@@ -83,3 +82,16 @@ add_action('after_setup_theme', 'dshft_editor_color_palette', 20); // priority 2
 // ============================================================
 // Uncomment and extend if you want Customizer controls:
 // require_once DSHFT_PLUGIN_DIR . 'includes/customizer.php';
+
+// ============================================================
+// HIDE DATES ON PRE-LAUNCH POSTS
+// All posts created before site launch are imported/old content
+// where the WP publish date is not meaningful. Remove this
+// filter once content is being created natively going forward.
+// ============================================================
+
+add_filter( 'dsp_show_post_date', function( $show, $post_id ) {
+    $cutoff    = strtotime( '2026-04-24' );
+    $post_date = get_post_time( 'U', false, $post_id );
+    return $post_date >= $cutoff;
+}, 10, 2 );

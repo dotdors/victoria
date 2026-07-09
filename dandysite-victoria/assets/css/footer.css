@@ -17,34 +17,34 @@
    Plugin overrides these with project-specific brand values.
    ================================================================ */
 .site-footer {
-    --footer-bg:            var(--color-background, #F3E9D7);
-    --footer-border:        var(--color-border, #D4C8B5);
-    --footer-text:          var(--color-text, #2A2420);
-    --footer-text-muted:    var(--color-text-muted, #7A706A);
-    --footer-link:          var(--color-text, #2A2420);
-    --footer-link-hover:    var(--color-wine-red, #7A1F2B);
-    --footer-title:         var(--color-text, #2A2420);
-    --footer-divider:       var(--color-border, #D4C8B5);
+    --footer-bg:            var(--color-background);
+    --footer-border:        var(--color-border);
+    --footer-text:          var(--color-text);
+    --footer-text-muted:    var(--color-text-light);
+    --footer-link:          var(--color-text);
+    --footer-link-hover:    var(--color-accent);
+    --footer-title:         var(--color-text);
+    --footer-divider:       var(--color-border);
     --footer-logo-opacity:  0.85;
 
     --footer-colophon-bg:   var(--color-surface, #ffffff);
-    --footer-colophon-text: var(--color-text-muted, #7A706A);
+    --footer-colophon-text: var(--color-text-light);
 }
 
 /* Dark mode defaults — plugin overrides with brand-specific values */
 body.footer-dark .site-footer {
-    --footer-bg:            #1e1a17;
+    --footer-bg:            var(--color-secondary);
     --footer-border:        rgba(255, 255, 255, 0.1);
-    --footer-text:          #e8dfd0;
-    --footer-text-muted:    #b0a090;
-    --footer-link:          #e8dfd0;
-    --footer-link-hover:    #c6a64b;
-    --footer-title:         #f3e9d7;
+    --footer-text:          rgba(255,255,255,0.9);
+    --footer-text-muted:    rgba(255,255,255,0.6);
+    --footer-link:          rgba(255,255,255,0.9);
+    --footer-link-hover:    var(--color-accent);
+    --footer-title:         #ffffff;
     --footer-divider:       rgba(255, 255, 255, 0.12);
     --footer-logo-opacity:  0.9;
 
-    --footer-colophon-bg:   #161310;
-    --footer-colophon-text: #7a706a;
+    --footer-colophon-bg:   rgba(0,0,0,0.2);
+    --footer-colophon-text: rgba(255,255,255,0.5);
 }
 
 
@@ -127,7 +127,7 @@ body.footer-show-logo .footer-logo {
 }
 
 .footer-logo__text {
-    font-family: var(--font-heading, 'EB Garamond', Georgia, serif);
+    font-family: var(--font-secondary);
     font-size: 1.25rem;
     font-weight: 600;
     letter-spacing: 0.05em;
@@ -161,7 +161,7 @@ body.footer-dark .footer-logo__img {
 }
 
 .footer-widget__title {
-    font-family: var(--font-heading, 'EB Garamond', Georgia, serif);
+    font-family: var(--font-secondary);
     font-size: 1rem;
     font-weight: 600;
     letter-spacing: 0.08em;

@@ -2,21 +2,18 @@
 /**
  * Template Part: Endorsements Section
  *
- * Displays endorsements from the dshft_endorsement CPT.
- * Gracefully hidden when the CPT / helper function doesn't exist.
- *
- * Requires: dshft_get_endorsements() from ds-hawkfortexas plugin.
+ * Displays endorsements from the dsp_endorsement CPT (registered in Victoria).
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-if ( ! function_exists( 'dshft_get_endorsements' ) ) return;
 
-$endorsements = dshft_get_endorsements( true ); // featured only on homepage
+$limit            = (int) get_option( 'dsp_hp_endorsements_count', 6 );
+$endorsements     = dsp_get_endorsements( true, $limit ); // featured only, up to limit
 if ( empty( $endorsements ) ) return;
 
 $section_title    = apply_filters( 'dsp_endorsements_title',    __( 'Endorsements', 'dandysite-victoria' ) );
-$section_subtitle = apply_filters( 'dsp_endorsements_subtitle', __( 'Trusted Leaders Supporting Hawk Dunlap', 'dandysite-victoria' ) );
+$section_subtitle = apply_filters( 'dsp_endorsements_subtitle', __( 'Trusted Community Leaders', 'dandysite-victoria' ) );
 ?>
 
 <section class="section-endorsements" id="endorsements">
@@ -27,9 +24,10 @@ $section_subtitle = apply_filters( 'dsp_endorsements_subtitle', __( 'Trusted Lea
 
         <div class="endorsements-grid">
             <?php foreach ( $endorsements as $endorsement ) :
-                $quote     = get_post_meta( $endorsement->ID, 'dshft_endorser_quote', true );
-                $title_org = get_post_meta( $endorsement->ID, 'dshft_endorser_title_org', true );
+                $quote     = get_post_meta( $endorsement->ID, 'dsp_endorser_quote', true );
+                $title_org = get_post_meta( $endorsement->ID, 'dsp_endorser_title_org', true );
                 $photo_url = get_the_post_thumbnail_url( $endorsement->ID, 'thumbnail' );
+                $link      = get_post_meta( $endorsement->ID, 'dsp_endorser_link', true );
             ?>
             <div class="endorsement-card">
 
@@ -46,7 +44,13 @@ $section_subtitle = apply_filters( 'dsp_endorsements_subtitle', __( 'Trusted Lea
                     <?php endif; ?>
                     <div>
                         <div class="endorsement-card__name">
+                            <?php if ( $link ) : ?>
+                            <a href="<?php echo esc_url( $link ); ?>" target="_blank" rel="noopener noreferrer">
+                                <?php echo esc_html( get_the_title( $endorsement ) ); ?>
+                            </a>
+                            <?php else : ?>
                             <?php echo esc_html( get_the_title( $endorsement ) ); ?>
+                            <?php endif; ?>
                         </div>
                         <?php if ( $title_org ) : ?>
                         <div class="endorsement-card__title-org">

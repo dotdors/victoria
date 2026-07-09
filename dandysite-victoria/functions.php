@@ -137,19 +137,66 @@ add_filter('excerpt_more', 'dsp_excerpt_more');
  */
 function dsp_editor_color_palette() {
     add_theme_support('editor-color-palette', [
-        ['name' => __('Primary Black', 'dandysite-victoria'), 'slug' => 'primary-black', 'color' => '#000000'],
-        ['name' => __('White', 'dandysite-victoria'),         'slug' => 'white',         'color' => '#ffffff'],
-        ['name' => __('Accent', 'dandysite-victoria'),        'slug' => 'accent',        'color' => '#ff6b35'],
-        ['name' => __('Text Gray', 'dandysite-victoria'),     'slug' => 'text-gray',     'color' => '#333333'],
-        ['name' => __('Light Gray', 'dandysite-victoria'),    'slug' => 'light-gray',    'color' => '#f8f8f8'],
+        ['name' => __('Oxford Navy',  'dandysite-victoria'), 'slug' => 'oxford-navy',  'color' => '#1d3557'],
+        ['name' => __('Cerulean',     'dandysite-victoria'), 'slug' => 'cerulean',     'color' => '#457b9d'],
+        ['name' => __('Frosted Blue', 'dandysite-victoria'), 'slug' => 'frosted-blue', 'color' => '#a8dadc'],
+        ['name' => __('Honeydew',     'dandysite-victoria'), 'slug' => 'honeydew',     'color' => '#f1faee'],
+        ['name' => __('Punch Red',    'dandysite-victoria'), 'slug' => 'punch-red',    'color' => '#e63946'],
+        ['name' => __('White',        'dandysite-victoria'), 'slug' => 'white',        'color' => '#ffffff'],
     ]);
 }
 add_action('after_setup_theme', 'dsp_editor_color_palette');
 
 /**
- * Security: Remove WordPress version from head
+ * Disable comments — political candidate sites don't use comments.
+ * Remove support, hide admin menu, redirect comment pages.
  */
-remove_action('wp_head', 'wp_generator');
+function dsp_disable_comments() {
+    // Remove support from post types
+    foreach ( [ 'post', 'page', 'attachment' ] as $type ) {
+        if ( post_type_supports( $type, 'comments' ) ) {
+            remove_post_type_support( $type, 'comments' );
+            remove_post_type_support( $type, 'trackbacks' );
+        }
+    }
+}
+add_action( 'init', 'dsp_disable_comments' );
+
+// Hide comments from admin menu and dashboard
+add_action( 'admin_menu', function() {
+    remove_menu_page( 'edit-comments.php' );
+} );
+add_action( 'admin_init', function() {
+    remove_meta_box( 'dashboard_recent_comments', 'dashboard', 'normal' );
+    // Close comments on all existing posts
+    global $wpdb;
+    // Remove discussion meta boxes from editor
+    remove_meta_box( 'commentstatusdiv', 'post', 'normal' );
+    remove_meta_box( 'commentstatusdiv', 'page', 'normal' );
+    remove_meta_box( 'commentsdiv', 'post', 'normal' );
+    remove_meta_box( 'commentsdiv', 'page', 'normal' );
+} );
+
+// Redirect any attempts to access comment pages
+add_action( 'template_redirect', function() {
+    if ( is_comment_feed() || is_singular() && comments_open() ) {
+        wp_redirect( home_url( '/' ), 301 );
+        exit;
+    }
+} );
+
+// Remove comments from admin bar
+add_action( 'wp_before_admin_bar_render', function() {
+    global $wp_admin_bar;
+    $wp_admin_bar->remove_menu( 'comments' );
+} );
+
+// Return 0 for comment counts
+add_filter( 'comments_open', '__return_false', 20 );
+add_filter( 'pings_open',    '__return_false', 20 );
+add_filter( 'comments_array', '__return_empty_array', 10 );
+
+
 
 /**
  * Clean up WordPress head
@@ -227,8 +274,100 @@ function dsp_register_theme_settings() {
         'dsp_features_section_callback',
         'dsp-theme-settings'
     );
+
+    // Bio section label
+    register_setting( 'dsp_theme_settings', 'dsp_bio_section_label', [
+        'type'              => 'string',
+        'sanitize_callback' => 'sanitize_text_field',
+        'default'           => '',
+    ] );
+    add_settings_field(
+        'dsp_bio_section_label',
+        __( 'Bio Section Eyebrow', 'dandysite-victoria' ),
+        'dsp_bio_section_label_field',
+        'dsp-theme-settings',
+        'dsp_features_section'
+    );
+
+    // Bio page slug
+    register_setting( 'dsp_theme_settings', 'dsp_bio_page_slug', [
+        'type'              => 'string',
+        'sanitize_callback' => 'sanitize_title',
+        'default'           => 'about',
+    ] );
+    add_settings_field(
+        'dsp_bio_page_slug',
+        __( 'Bio Page', 'dandysite-victoria' ),
+        'dsp_bio_page_slug_field',
+        'dsp-theme-settings',
+        'dsp_features_section'
+    );
+
+    // External article link behavior
+    register_setting( 'dsp_theme_settings', 'dsp_external_link_behavior', [
+        'type'              => 'string',
+        'sanitize_callback' => 'sanitize_text_field',
+        'default'           => 'summary',
+    ] );
+    add_settings_field(
+        'dsp_external_link_behavior',
+        __( 'External Article Behavior', 'dandysite-victoria' ),
+        'dsp_external_link_behavior_field',
+        'dsp-theme-settings',
+        'dsp_features_section'
+    );
 }
 add_action('admin_init', 'dsp_register_theme_settings');
+
+function dsp_bio_section_label_field() {
+    $value = get_option( 'dsp_bio_section_label', '' );
+    ?>
+    <input type="text" name="dsp_bio_section_label"
+           value="<?php echo esc_attr( $value ); ?>"
+           class="regular-text"
+           placeholder="<?php esc_attr_e( 'About the Candidate', 'dandysite-victoria' ); ?>" />
+    <p class="description">
+        <?php esc_html_e( 'Small label shown above the name in the bio section. Leave blank to hide it entirely.', 'dandysite-victoria' ); ?>
+    </p>
+    <?php
+}
+
+function dsp_bio_page_slug_field() {
+    $slug  = get_option( 'dsp_bio_page_slug', 'about' );
+    $pages = get_pages( [ 'post_status' => 'publish' ] );
+    ?>
+    <select name="dsp_bio_page_slug">
+        <option value=""><?php esc_html_e( '— Select a page —', 'dandysite-victoria' ); ?></option>
+        <?php foreach ( $pages as $page ) : ?>
+        <option value="<?php echo esc_attr( $page->post_name ); ?>"
+            <?php selected( $slug, $page->post_name ); ?>>
+            <?php echo esc_html( $page->post_title ); ?>
+        </option>
+        <?php endforeach; ?>
+    </select>
+    <p class="description">
+        <?php esc_html_e( 'The page whose content appears in the "Meet the Candidate" bio section on the homepage. Defaults to a page with slug "about".', 'dandysite-victoria' ); ?>
+    </p>
+    <?php
+}
+
+function dsp_external_link_behavior_field() {
+    $value = get_option( 'dsp_external_link_behavior', 'summary' );
+    ?>
+    <fieldset>
+        <label style="display:block; margin-bottom:0.5em;">
+            <input type="radio" name="dsp_external_link_behavior" value="summary" <?php checked( $value, 'summary' ); ?> />
+            <strong><?php _e( 'Link to summary page', 'dandysite-victoria' ); ?></strong>
+            &mdash; <?php _e( 'News card goes to the on-site post. The post shows a "Read at [Publication]" button linking to the original. Recommended — keeps content on your domain and survives link death.', 'dandysite-victoria' ); ?>
+        </label>
+        <label style="display:block;">
+            <input type="radio" name="dsp_external_link_behavior" value="direct" <?php checked( $value, 'direct' ); ?> />
+            <strong><?php _e( 'Link directly to source', 'dandysite-victoria' ); ?></strong>
+            &mdash; <?php _e( 'News card clicks go straight to the external URL in a new tab. Simpler, but dependent on the external link staying live.', 'dandysite-victoria' ); ?>
+        </label>
+    </fieldset>
+    <?php
+}
 
 function dsp_theme_settings_page() {
     if (!current_user_can('manage_options')) {
@@ -265,6 +404,19 @@ function dsp_favicon_links() {
     <?php
 }
 add_action('wp_head', 'dsp_favicon_links', 1);
+
+// ===== CUSTOM POST TYPES =====
+require_once DSP_THEME_DIR . '/includes/cpts/cpt-endorsements.php';
+require_once DSP_THEME_DIR . '/includes/cpts/cpt-positions.php';
+
+// ===== POST META (article details) =====
+require_once DSP_THEME_DIR . '/includes/post-meta.php';
+
+// ===== THEME ACTIVATION =====
+require_once DSP_THEME_DIR . '/includes/theme-activation.php';
+
+// ===== HOMEPAGE SETTINGS =====
+require_once DSP_THEME_DIR . '/includes/homepage-settings.php';
 
 // ===== HEADER SYSTEM =====
 require_once DSP_THEME_DIR . '/includes/header-settings.php';

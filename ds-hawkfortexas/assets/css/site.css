@@ -1,6 +1,9 @@
 /**
- * Hawk for Texas — Site-Specific Styles
+ * Hawk for Texas — Site-Specific Overrides
  * Loads after dandysite-victoria/style.css
+ *
+ * This file contains ONLY Hawk-specific overrides.
+ * All shared section/component layout lives in Victoria's style.css.
  */
 
 /* ============================================================
@@ -8,100 +11,57 @@
    ============================================================ */
 
 :root {
-    --color-primary:        #C8102E;   /* campaign red */
-    --color-secondary:      #1a1a2e;   /* near-black navy */
-    --color-accent:         #C8102E;
-    --color-text:           #222222;
-    --color-text-light:     #555555;
-    --color-background:     #ffffff;
-    --color-surface:        #f5f5f5;
-    --color-dark-bg:        #1a1a2e;   /* dark section backgrounds */
+    --color-primary:     #C8102E;   /* campaign red */
+    --color-secondary:   #1d3557;   /* Oxford Navy */
+    --color-accent:      #C8102E;
+    --color-surface:     #f5f5f5;
+    --color-button-bg:   #C8102E;
+    --color-button-text: #ffffff;
 
-    --color-button-bg:      #C8102E;
-    --color-button-text:    #ffffff;
+    /* Typography */
+    --font-primary:   'Barlow', system-ui, sans-serif;
+    --font-secondary: 'Barlow', system-ui, sans-serif;
 
-    --font-primary:   'Open Sans', system-ui, sans-serif;
-    --font-secondary: Georgia, serif;
+    /* Header — solid background matches site header color */
+    --header-solid-bg:     #1d3557;   /* Oxford Navy */
+    --header-solid-color:  #ffffff;
+    --header-solid-border: transparent;
 
-    /* Section spacing */
-    --section-padding: 4rem 0;
+    /* Mobile menu panel */
+    --header-mobile-menu-bg:     #1d3557;
+    --header-mobile-menu-color:  #ffffff;
+    --header-mobile-menu-shadow: -4px 0 20px rgba(0,0,0,0.3);
+
+    /* Revealed header (scroll-up) — match solid header */
+    --header-revealed-solid-bg:    #1d3557;
+    --header-revealed-solid-color: #ffffff;
 }
 
 /* ============================================================
-   GLOBAL
+   HEADER
    ============================================================ */
 
-.btn,
-.button,
-a.btn,
-a.button {
-    display: inline-block;
+.site-header {
     background: var(--color-primary);
+}
+.site-header a,
+.site-header .site-title a {
     color: #fff;
-    padding: 0.7em 1.6em;
-    border-radius: 4px;
-    font-weight: 600;
-    font-size: 0.9rem;
+}
+.site-header a:hover {
+    color: rgba(255,255,255,0.8);
     text-decoration: none;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    transition: background 0.2s ease, transform 0.1s ease;
-    border: none;
-    cursor: pointer;
-}
-.btn:hover,
-.button:hover,
-a.btn:hover,
-a.button:hover {
-    background: #a00e24;
-    color: #fff;
-    transform: translateY(-1px);
-}
-.btn--outline {
-    background: transparent;
-    color: var(--color-primary);
-    border: 2px solid var(--color-primary);
-}
-.btn--outline:hover {
-    background: var(--color-primary);
-    color: #fff;
-}
-.btn--white {
-    background: #fff;
-    color: var(--color-primary);
-}
-.btn--white:hover {
-    background: #f0f0f0;
-    color: var(--color-primary);
-}
-
-.section-title {
-    font-size: clamp(1.6rem, 3vw, 2.2rem);
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 0.4rem;
-    letter-spacing: -0.01em;
-}
-.section-subtitle {
-    text-align: center;
-    color: var(--color-text-light);
-    margin-bottom: 2.5rem;
-    font-size: 1rem;
-}
-.section-title--white,
-.section-subtitle--white {
-    color: #fff;
 }
 
 /* ============================================================
-   HERO OVERRIDES
+   HERO
    ============================================================ */
 
 .hero--fullbleed .hero__overlay {
     background: linear-gradient(
         to right,
-        rgba(26, 26, 46, 0.75) 40%,
-        rgba(26, 26, 46, 0.1) 100%
+        rgba(29, 53, 87, 0.75) 40%,
+        rgba(29, 53, 87, 0.1) 100%
     );
 }
 
@@ -124,337 +84,246 @@ a.button:hover {
 }
 
 /* ============================================================
-   NAV OVERRIDES
-   ============================================================ */
-
-.site-header {
-    background: var(--color-primary);
-}
-.site-header a,
-.site-header .site-title a {
-    color: #fff;
-}
-.site-header a:hover {
-    color: rgba(255,255,255,0.8);
-}
-.nav-donate-btn {
-    background: #fff;
-    color: var(--color-primary) !important;
-    padding: 0.4em 1.2em;
-    border-radius: 4px;
-    font-weight: 700;
-    font-size: 0.85rem;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-}
-.nav-donate-btn:hover {
-    background: #f0f0f0 !important;
-    color: var(--color-primary) !important;
-}
-
-/* ============================================================
-   SECTION: BIO (Meet Hawk)
+   BIO SECTION — dark background for Hawk
    ============================================================ */
 
 .section-bio {
-    padding: var(--section-padding);
-    background: var(--color-background);
+    background: var(--color-secondary);
 }
-.section-bio .container {
-    max-width: var(--container-max-width);
-    margin: 0 auto;
-    padding: 0 1.5rem;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
-    align-items: center;
-}
-.section-bio__image img {
-    width: 100%;
-    height: auto;
-    display: block;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-}
-.section-bio__text .section-label {
-    display: block;
+.section-bio .section-label {
     color: var(--color-primary);
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-bottom: 0.75rem;
 }
 .section-bio__text h2 {
-    font-size: clamp(1.5rem, 2.5vw, 2rem);
-    font-weight: 700;
-    margin-bottom: 1rem;
-    line-height: 1.2;
+    color: #ffffff;
 }
 .section-bio__text p {
-    color: var(--color-text-light);
-    line-height: 1.75;
-    margin-bottom: 1rem;
+    color: rgba(255,255,255,0.8);
 }
 .section-bio__pullquote {
-    border-left: 4px solid var(--color-primary);
-    padding: 0.75rem 1.25rem;
-    margin: 1.5rem 0;
-    font-size: 1.05rem;
-    font-style: italic;
-    color: var(--color-secondary);
-    background: var(--color-surface);
+    color: rgba(255,255,255,0.9);
+    background: rgba(255,255,255,0.06);
+    border-left-color: var(--color-primary);
 }
-@media (max-width: 768px) {
-    .section-bio .container { grid-template-columns: 1fr; }
-    .section-bio__image { order: -1; }
+.section-bio__content a {
+    color: var(--color-primary);
 }
-
-/* ============================================================
-   SECTION: ISSUES / POSITIONS
-   ============================================================ */
-
-.section-issues {
-    padding: var(--section-padding);
-    background: var(--color-secondary);
+.section-bio__content a:hover {
     color: #fff;
 }
-.section-issues .container {
-    max-width: var(--container-max-width);
-    margin: 0 auto;
-    padding: 0 1.5rem;
-}
-.section-issues .section-title { color: #fff; }
-.section-issues .section-subtitle { color: rgba(255,255,255,0.7); }
-
-.issues-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1.5rem;
-}
-.issue-card {
-    background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: var(--border-radius);
-    padding: 1.75rem 1.5rem;
-    transition: background 0.2s ease, transform 0.2s ease;
-}
-.issue-card:hover {
-    background: rgba(255,255,255,0.12);
-    transform: translateY(-2px);
-}
-.issue-card__icon {
-    font-size: 1.8rem;
-    color: var(--color-primary);
-    margin-bottom: 0.75rem;
-}
-.issue-card__title {
-    font-size: 1.05rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
+.section-bio .btn--outline {
     color: #fff;
+    border-color: #fff;
 }
-.issue-card__summary {
-    font-size: 0.9rem;
-    color: rgba(255,255,255,0.75);
-    line-height: 1.6;
-    margin-bottom: 1rem;
-}
-.issue-card__link {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--color-primary);
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    text-decoration: none;
-}
-.issue-card__link:hover { color: #ff4060; }
-
-/* ============================================================
-   SECTION: NEWS
-   ============================================================ */
-
-.section-news {
-    padding: var(--section-padding);
-    background: var(--color-surface);
-}
-.section-news .container {
-    max-width: var(--container-max-width);
-    margin: 0 auto;
-    padding: 0 1.5rem;
-}
-.news-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-}
-.news-card {
+.section-bio .btn--outline:hover {
     background: #fff;
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    display: flex;
-    flex-direction: column;
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    color: var(--color-secondary);
 }
-.news-card:hover {
-    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-    transform: translateY(-2px);
+
+/* ============================================================
+   #NEWS — publication logo treatment
+   Red border separator below the contained logo
+   ============================================================ */
+
+#news .news-card__thumbnail--contain {
+    border-bottom: 3px solid var(--color-primary);
 }
-.news-card__thumbnail {
-    aspect-ratio: 16/9;
-    overflow: hidden;
+
+/* ============================================================
+   #ARTICLES — no thumbnails
+   ============================================================ */
+
+#articles .news-card__thumbnail {
+    display: none;
 }
-.news-card__thumbnail img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+
+
+
+/* ============================================================
+   HEADER — keep logo white on scroll-up reveal
+   Victoria's header.css sets filter:none on .header--revealed
+   for sites with a light revealed header. Hawk's header is
+   always red so we keep the white filter.
+   ============================================================ */
+
+body.header-reveal-solid .site-header.header--revealed .site-logo {
+    filter: brightness(0) invert(1);
 }
-.news-card__thumbnail-placeholder {
-    width: 100%;
-    height: 100%;
-    background: var(--color-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+
+/* ============================================================
+   ENDORSEMENTS — redesigned
+   Hide title/subtitle. Bold, open cards — no grey background.
+   ============================================================ */
+
+/* Hide section heading for endorsements */
+.section-endorsements .section-title,
+.section-endorsements .section-subtitle {
+    display: none;
 }
-.news-card__thumbnail-placeholder span {
-    font-size: 2rem;
-    color: rgba(255,255,255,0.4);
+
+/* Wider, fewer-column grid */
+.section-endorsements .endorsements-grid {
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 2rem;
 }
-.news-card__body {
-    padding: 1.25rem 1.25rem 1.5rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+
+/* Card — open, white, strong left border */
+.section-endorsements .endorsement-card {
+    background: #fff;
+    border-top: none;
+    border-left: 6px solid var(--color-primary);
+    border-radius: 0;
+    padding: 2rem 2rem 2rem 1.75rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    position: relative;
 }
-.news-card__source {
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+
+/* Large decorative quote mark */
+.section-endorsements .endorsement-card::before {
+    content: '\201D';
+    font-size: 5rem;
+    line-height: 1;
     color: var(--color-primary);
-    margin-bottom: 0.4rem;
+    opacity: 0.25;
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+    font-family: Georgia, serif;
 }
-.news-card__title {
+
+/* Larger, bolder quote text */
+.section-endorsements .endorsement-card__quote {
+    font-size: 1.05rem;
+    font-style: normal;
+    font-weight: 500;
+    color: var(--color-text);
+    line-height: 1.65;
+    margin-bottom: 1.5rem;
+}
+
+/* Remove default curly quotes — we have the decorative one */
+.section-endorsements .endorsement-card__quote::before,
+.section-endorsements .endorsement-card__quote::after {
+    content: '';
+}
+
+/* Bold name treatment */
+.section-endorsements .endorsement-card__name {
     font-size: 1rem;
-    font-weight: 600;
-    line-height: 1.4;
-    margin-bottom: 0.6rem;
-    flex: 1;
+    font-weight: 800;
+    color: var(--color-primary);
+    letter-spacing: 0.01em;
 }
-.news-card__title a {
+.section-endorsements .endorsement-card__name a {
+    color: var(--color-primary);
+}
+.section-endorsements .endorsement-card__name a:hover {
+    color: var(--color-secondary);
+}
+.section-endorsements .endorsement-card__title-org {
+    font-size: 0.82rem;
+    color: var(--color-text-light);
+    margin-top: 0.2rem;
+    font-weight: 500;
+}
+
+/* ============================================================
+   SINGLE POST — IN THE NEWS
+   ============================================================ */
+
+/* Hide featured image on "In the News" posts —
+   it's just the publication logo, not editorial content */
+.category-in-the-news .entry-featured-image {
+    display: none;
+}
+
+/* Hide the source label when an external link button is present —
+   the button already says "Read at [Publication]", so it's duplicative */
+.article-publication-bar:has(.article-publication-bar__link) .article-publication-bar__source {
+    display: none;
+}
+
+/* Tone down the publication bar — subtle text links, not big buttons */
+.article-publication-bar .btn {
+    background: transparent;
+    color: var(--color-text-light);
+    border: 1px solid #999;
+    font-size: 0.8rem;
+    padding: 0.4em 1em;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 500;
+    border-radius: 3px;
+}
+.article-publication-bar .btn:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+    background: transparent;
+    transform: none;
+}
+
+/* PDF link — add download icon before the text */
+.article-publication-bar__pdf::before {
+    content: '↓ ';
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+/* ============================================================
+   PAGINATION — cleaner treatment
+   Victoria default uses a filled accent box which is too heavy.
+   ============================================================ */
+
+.page-numbers {
+    padding: 0.4em 0.9em;
+    border: 1px solid var(--color-border);
     color: var(--color-text);
     text-decoration: none;
-}
-.news-card__title a:hover { color: var(--color-primary); }
-.news-card__date {
-    font-size: 0.8rem;
-    color: var(--color-text-light);
-    margin-bottom: 1rem;
-}
-.news-section__footer {
-    text-align: center;
-}
-
-/* ============================================================
-   SECTION: ENDORSEMENTS
-   ============================================================ */
-
-.section-endorsements {
-    padding: var(--section-padding);
-    background: var(--color-background);
-}
-.section-endorsements .container {
-    max-width: var(--container-max-width);
-    margin: 0 auto;
-    padding: 0 1.5rem;
-}
-.endorsements-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1.5rem;
-}
-.endorsement-card {
-    background: var(--color-surface);
-    border-radius: var(--border-radius);
-    padding: 1.75rem 1.5rem;
-    border-top: 4px solid var(--color-primary);
-}
-.endorsement-card__quote {
-    font-style: italic;
-    color: var(--color-text-light);
-    line-height: 1.65;
-    margin-bottom: 1.25rem;
-    font-size: 0.95rem;
-}
-.endorsement-card__quote::before { content: '\201C'; }
-.endorsement-card__quote::after  { content: '\201D'; }
-.endorsement-card__byline {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-.endorsement-card__photo {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    object-fit: cover;
-    flex-shrink: 0;
-}
-.endorsement-card__name {
-    font-weight: 700;
+    border-radius: 3px;
     font-size: 0.9rem;
-    color: var(--color-text);
+    transition: border-color 0.2s ease, color 0.2s ease;
+    background: transparent;
 }
-.endorsement-card__title-org {
-    font-size: 0.8rem;
+.page-numbers:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    background: transparent;
+    text-decoration: none;
+}
+.page-numbers.current {
+    border-color: var(--color-secondary);
+    color: var(--color-secondary);
+    background: transparent;
+    font-weight: 700;
+}
+/* Next/Prev text links — no border */
+.page-numbers.next,
+.page-numbers.prev {
+    border-color: transparent;
     color: var(--color-text-light);
-    margin-top: 0.15rem;
+}
+.page-numbers.next:hover,
+.page-numbers.prev:hover {
+    color: var(--color-primary);
+    border-color: transparent;
+    background: transparent;
 }
 
 /* ============================================================
-   SECTION: GET INVOLVED
+   TYPOGRAPHY — Barlow Semi Condensed for headings
    ============================================================ */
 
-.section-get-involved {
-    padding: var(--section-padding);
-    background: var(--color-primary);
-    color: #fff;
-    text-align: center;
-}
-.section-get-involved .container {
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 0 1.5rem;
-}
-.section-get-involved .section-title { color: #fff; }
-.section-get-involved p {
-    color: rgba(255,255,255,0.85);
-    font-size: 1.05rem;
-    margin-bottom: 2rem;
-}
-.get-involved-actions {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
+h1, h2, h3, h4, h5, h6,
+.section-title,
+.hero__headline,
+.entry-title,
+.archive-title,
+.news-card__title {
+    font-family: var(--font-secondary);
+    font-weight: 700;
+    letter-spacing: -0.01em;
 }
 
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
-
-@media (max-width: 640px) {
-    .issues-grid,
-    .news-grid,
-    .endorsements-grid {
-        grid-template-columns: 1fr;
-    }
-    .get-involved-actions {
-        flex-direction: column;
-        align-items: center;
-    }
+/* Hero headline — heavier weight for impact */
+.hero__headline {
+    font-weight: 800;
 }
