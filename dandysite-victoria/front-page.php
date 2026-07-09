@@ -2,19 +2,20 @@
 /**
  * Front Page Template — Dandysite Victoria
  *
- * Section order (reorder via CSS `order` property in site plugin):
- *   1. Hero         — always shown
- *   2. Bio          — toggle in Homepage Settings
- *   3. Issues       — toggle in Homepage Settings
- *   4. Articles     — toggle in Homepage Settings (categories configurable)
- *   5. In the News  — toggle in Homepage Settings (categories configurable)
- *   6. Endorsements — toggle in Homepage Settings
- *   7. Get Involved — toggle in Homepage Settings
+ * Sections (visibility toggled in Appearance → Homepage Settings):
+ *   Hero          — always shown, pinned to the top
+ *   Bio           — Meet the candidate
+ *   Issues        — Positions CPT
+ *   Articles      — Op-eds / written work (categories configurable)
+ *   In the News   — Press coverage (categories configurable)
+ *   Endorsements  — Endorsements CPT (grid or carousel)
+ *   Get Involved  — CTA buttons
+ *   Connect       — Contact heading, email, social links
  *
- * To reorder sections on a specific site without touching this file,
- * use CSS order properties in the site plugin:
- *   .section-news { order: 3; }
- *   .section-articles { order: 4; }
+ * ORDERING: Sections are wrapped in .homepage-sections (flex column) and
+ * each carries an inline CSS `order` value from Homepage Settings.
+ * The hero is order 0 and always first. Site plugins can still override
+ * with CSS (higher specificity or !important) or the filters below.
  *
  * To add a custom section, filter dsp_homepage_sections and handle
  * via the dsp_homepage_section_{slug} action hook.
@@ -40,12 +41,26 @@ if ( get_option( 'dsp_hp_show_articles',      '1' ) === '1' ) $sections[] = 'art
 if ( get_option( 'dsp_hp_show_news',          '1' ) === '1' ) $sections[] = 'news';
 if ( get_option( 'dsp_hp_show_endorsements',  '1' ) === '1' ) $sections[] = 'endorsements';
 if ( get_option( 'dsp_hp_show_cta',           '1' ) === '1' ) $sections[] = 'get-involved';
+if ( get_option( 'dsp_hp_show_connect',       '1' ) === '1' ) $sections[] = 'connect';
 
 // Allow site plugin to add, remove, or reorder
 $sections = apply_filters( 'dsp_homepage_sections', $sections );
 
-get_header();
+// --- Section order (CSS order values, editable in Homepage Settings) ---
+$order_defaults = dsp_hp_section_order_defaults();
+$order_css = ".homepage-sections{display:flex;flex-direction:column;}";
+foreach ( $order_defaults as $key => $default ) {
+    $order    = (int) get_option( 'dsp_hp_order_' . str_replace( '-', '_', $key ), $default );
+    $selector = ( $key === 'hero' ) ? '.homepage-sections > .hero' : '.homepage-sections > .section-' . $key;
+    $order_css .= $selector . '{order:' . $order . ';}';
+}
+$order_css = apply_filters( 'dsp_homepage_order_css', $order_css );
 
+get_header();
+?>
+<style id="dsp-section-order"><?php echo strip_tags( $order_css ); ?></style>
+<div class="homepage-sections">
+<?php
 foreach ( $sections as $section ) :
     switch ( $section ) :
 
@@ -77,11 +92,17 @@ foreach ( $sections as $section ) :
             get_template_part( 'template-parts/section-get-involved' );
             break;
 
+        case 'connect':
+            get_template_part( 'template-parts/section-connect' );
+            break;
+
         default:
             do_action( 'dsp_homepage_section_' . sanitize_key( $section ) );
             break;
 
     endswitch;
 endforeach;
-
+?>
+</div><!-- .homepage-sections -->
+<?php
 get_footer();

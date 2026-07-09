@@ -14,6 +14,13 @@ if ( empty( $endorsements ) ) return;
 
 $section_title    = apply_filters( 'dsp_endorsements_title',    __( 'Endorsements', 'dandysite-victoria' ) );
 $section_subtitle = apply_filters( 'dsp_endorsements_subtitle', __( 'Trusted Community Leaders', 'dandysite-victoria' ) );
+
+// Layout: 'grid' (side by side, default) or 'carousel' (one at a time, auto-cycling)
+$layout     = get_option( 'dsp_hp_endorsements_layout', 'grid' );
+$grid_class = 'endorsements-grid';
+if ( $layout === 'carousel' && count( $endorsements ) > 1 ) {
+    $grid_class .= ' endorsements-grid--carousel';
+}
 ?>
 
 <section class="section-endorsements" id="endorsements">
@@ -22,7 +29,7 @@ $section_subtitle = apply_filters( 'dsp_endorsements_subtitle', __( 'Trusted Com
         <h2 class="section-title"><?php echo esc_html( $section_title ); ?></h2>
         <p class="section-subtitle"><?php echo esc_html( $section_subtitle ); ?></p>
 
-        <div class="endorsements-grid">
+        <div class="<?php echo esc_attr( $grid_class ); ?>" data-interval="7000">
             <?php foreach ( $endorsements as $endorsement ) :
                 $quote     = get_post_meta( $endorsement->ID, 'dsp_endorser_quote', true );
                 $title_org = get_post_meta( $endorsement->ID, 'dsp_endorser_title_org', true );

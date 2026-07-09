@@ -6,6 +6,10 @@
  *   - Featured Image: candidate photo
  *   - Content: bio text
  *
+ * Image display is controlled in Appearance → Homepage Settings:
+ *   dsp_hp_bio_image_mode   'featured' (default) | 'none' | 'background'
+ *   dsp_hp_bio_image_id     attachment ID — overrides the featured image
+ *
  * Falls back gracefully if no about page exists.
  * Site plugin can filter the page slug via 'dsp_bio_page_slug'.
  */
@@ -21,17 +25,38 @@ if ( ! $bio_page ) return;
 
 $bio_title    = get_the_title( $bio_page );
 $bio_content  = apply_filters( 'the_content', $bio_page->post_content );
-$bio_image    = get_the_post_thumbnail( $bio_page, 'large', [ 'class' => 'bio-image' ] );
 $bio_link     = get_permalink( $bio_page );
+
+// --- Image mode + optional override ---
+$image_mode  = get_option( 'dsp_hp_bio_image_mode', 'featured' ); // featured | none | background
+$override_id = (int) get_option( 'dsp_hp_bio_image_id', 0 );
+
+$image_id = $override_id ?: get_post_thumbnail_id( $bio_page );
+
+$bio_image = '';
+$bg_url    = '';
+if ( $image_id && $image_mode === 'featured' ) {
+    $bio_image = wp_get_attachment_image( $image_id, 'large', false, [ 'class' => 'bio-image' ] );
+} elseif ( $image_id && $image_mode === 'background' ) {
+    $bg_url = wp_get_attachment_image_url( $image_id, 'full' );
+}
 
 // Pull quote — stored as post meta 'dsp_bio_pullquote', or first blockquote in content
 $pullquote = get_post_meta( $bio_page->ID, 'dsp_bio_pullquote', true );
 $section_label = get_option( 'dsp_bio_section_label', '' );
 $section_label = apply_filters( 'dsp_bio_section_label', $section_label );
 $read_more     = apply_filters( 'dsp_bio_read_more_text', __( 'Read More', 'dandysite-victoria' ) );
+
+$section_classes = 'section-bio';
+if ( $bg_url ) {
+    $section_classes .= ' section-bio--bg';
+} elseif ( ! $bio_image ) {
+    $section_classes .= ' section-bio--no-image';
+}
 ?>
 
-<section class="section-bio" id="meet-candidate">
+<section class="<?php echo esc_attr( $section_classes ); ?>" id="meet-candidate"
+    <?php if ( $bg_url ) : ?>style="background-image: url('<?php echo esc_url( $bg_url ); ?>');"<?php endif; ?>>
     <div class="container">
 
         <?php if ( $bio_image ) : ?>

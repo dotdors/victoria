@@ -41,7 +41,13 @@ get_header(); ?>
 
             </header>
 
-            <?php if ( has_post_thumbnail() ) : ?>
+            <?php
+            // Featured image — global toggle in Appearance → Theme Settings,
+            // still filterable per-site/per-post via 'dsp_show_single_featured_image'.
+            $show_featured = get_option( 'dsp_single_featured_image', '1' ) === '1';
+            $show_featured = apply_filters( 'dsp_show_single_featured_image', $show_featured, get_the_ID() );
+            if ( $show_featured && has_post_thumbnail() ) :
+            ?>
             <div class="entry-featured-image">
                 <?php the_post_thumbnail( 'large' ); ?>
             </div>

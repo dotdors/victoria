@@ -49,6 +49,12 @@ function dsp_social_platforms() {
             'aria'       => 'Find us on Facebook',
             'network'    => 'Facebook',
         ],
+        'dsp_social_x' => [
+            'label'      => __( 'X (Twitter) URL', 'dandysite-victoria' ),
+            'icon'       => 'icon-x.svg',
+            'aria'       => 'Find us on X',
+            'network'    => 'X',
+        ],
     ];
 }
 

@@ -816,6 +816,59 @@ a.btn:hover {
     }
 }
 
+/* Bio — no image mode: single centered column */
+.section-bio--no-image .container {
+    grid-template-columns: 1fr;
+    max-width: var(--content-max-width);
+}
+
+/* Bio — background image mode: image fills section, text overlays on panel */
+.section-bio--bg {
+    position: relative;
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+}
+.section-bio--bg::before {
+    /* Darkening gradient for legibility — heavier on the text side */
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.15) 0%,
+        rgba(0, 0, 0, 0.55) 55%,
+        rgba(0, 0, 0, 0.7) 100%
+    );
+}
+.section-bio--bg .container {
+    position: relative;
+    grid-template-columns: 1fr;
+    justify-items: end;
+}
+.section-bio--bg .section-bio__text {
+    max-width: 560px;
+    color: #fff;
+}
+.section-bio--bg .section-bio__text h2,
+.section-bio--bg .section-bio__text p,
+.section-bio--bg .section-label {
+    color: #fff;
+}
+.section-bio--bg .section-bio__pullquote {
+    background: rgba(255, 255, 255, 0.12);
+    border-left-color: #fff;
+    color: #fff;
+}
+@media (max-width: 768px) {
+    .section-bio--bg::before {
+        background: rgba(0, 0, 0, 0.6);
+    }
+    .section-bio--bg .container {
+        justify-items: stretch;
+    }
+}
+
 /* ---- Issues / Positions section ---- */
 
 .section-issues {
@@ -1021,6 +1074,100 @@ a.btn:hover {
     margin-top: 0.15rem;
 }
 
+/* ---- Endorsements carousel variant ----
+   Activated by Homepage Settings → Endorsements → Layout: Carousel.
+   Styles are gated behind .is-ready (added by endorsements.js) so if JS
+   fails to load, cards fall back to a simple stacked list. */
+
+.endorsements-grid--carousel {
+    grid-template-columns: 1fr;
+    max-width: 720px;
+    margin: 0 auto;
+}
+.endorsements-grid--carousel.is-ready .endorsement-card {
+    grid-area: 1 / 1;               /* all cards stack in the same cell */
+    opacity: 0;
+    transition: opacity 0.7s ease;
+    pointer-events: none;
+}
+.endorsements-grid--carousel.is-ready .endorsement-card.is-active {
+    opacity: 1;
+    pointer-events: auto;
+}
+.endorsements-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 1.25rem;
+}
+.endorsements-dot {
+    width: 11px;
+    height: 11px;
+    padding: 0;
+    border: 2px solid var(--color-accent);
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+.endorsements-dot:hover {
+    transform: scale(1.2);
+}
+.endorsements-dot.is-active {
+    background: var(--color-accent);
+}
+.endorsements-dot:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+}
+
+/* ---- Contact / Connect section ---- */
+
+.section-connect {
+    padding: var(--section-padding);
+    background: var(--color-surface);
+    text-align: center;
+}
+.section-connect .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+.section-connect__text {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--color-text-light);
+    margin-bottom: 1.5rem;
+}
+.section-connect__email {
+    display: inline-block;
+    font-size: clamp(1.15rem, 2.2vw, 1.5rem);
+    font-weight: 700;
+    color: var(--color-accent);
+    text-decoration: none;
+    border-bottom: 2px solid var(--color-accent);
+    padding-bottom: 0.15em;
+    margin-bottom: 1.75rem;
+    transition: opacity 0.15s ease;
+}
+.section-connect__email:hover {
+    opacity: 0.8;
+    text-decoration: none;
+}
+.section-connect__socials .ds-socials {
+    display: flex;
+    justify-content: center;
+    gap: 1.25rem;
+}
+.section-connect__socials .ds-socials__link {
+    color: var(--color-primary);
+    transition: color 0.15s ease, transform 0.15s ease;
+}
+.section-connect__socials .ds-socials__link:hover {
+    color: var(--color-accent);
+    transform: translateY(-2px);
+}
+
 /* ---- Get Involved / CTA section ---- */
 
 .section-get-involved {
@@ -1108,6 +1255,15 @@ a.btn:hover {
     margin-bottom: var(--spacing-lg);
     border-radius: var(--border-radius);
     overflow: hidden;
+    box-shadow: var(--box-shadow);
+    line-height: 0; /* kill inline-img gap below */
+}
+.entry-featured-image img {
+    width: 100%;
+    height: auto;
+    max-height: 480px;
+    object-fit: cover;
+    display: block;
 }
 .entry-content {
     line-height: 1.8;

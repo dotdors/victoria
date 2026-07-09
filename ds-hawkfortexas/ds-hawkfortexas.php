@@ -59,7 +59,12 @@ function dshft_enqueue_assets() {
         );
     }
 }
-add_action('wp_enqueue_scripts', 'dshft_enqueue_assets');
+// Priority 20: the theme enqueues at default 10, and since plugins load
+// before themes, a tied priority would run this first — printing site.css
+// BEFORE conditionally-loaded theme styles like homepage.css and letting
+// the theme win the cascade. Priority 20 guarantees site.css always
+// enqueues (and prints) after every Victoria stylesheet.
+add_action('wp_enqueue_scripts', 'dshft_enqueue_assets', 20);
 
 // ============================================================
 // EDITOR COLOR PALETTE OVERRIDE

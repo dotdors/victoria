@@ -75,6 +75,12 @@ function dsp_enqueue_assets() {
         ]);
     }
 
+    // Endorsements carousel — front page only, and only when carousel layout is selected
+    $endorsements_js = DSP_THEME_DIR . '/assets/js/endorsements.js';
+    if (is_front_page() && get_option('dsp_hp_endorsements_layout', 'grid') === 'carousel' && file_exists($endorsements_js)) {
+        wp_enqueue_script('dsp-endorsements', DSP_THEME_URI . '/assets/js/endorsements.js', [], filemtime($endorsements_js), true);
+    }
+
     $header_css = DSP_THEME_DIR . '/assets/css/header.css';
     if (file_exists($header_css)) {
         wp_enqueue_style('dsp-header-style', DSP_THEME_URI . '/assets/css/header.css', ['dsp-style'], filemtime($header_css));
@@ -303,6 +309,20 @@ function dsp_register_theme_settings() {
         'dsp_features_section'
     );
 
+    // Featured image on single posts
+    register_setting( 'dsp_theme_settings', 'dsp_single_featured_image', [
+        'type'              => 'string',
+        'sanitize_callback' => 'sanitize_text_field',
+        'default'           => '1',
+    ] );
+    add_settings_field(
+        'dsp_single_featured_image',
+        __( 'Single Post Featured Image', 'dandysite-victoria' ),
+        'dsp_single_featured_image_field',
+        'dsp-theme-settings',
+        'dsp_features_section'
+    );
+
     // External article link behavior
     register_setting( 'dsp_theme_settings', 'dsp_external_link_behavior', [
         'type'              => 'string',
@@ -328,6 +348,19 @@ function dsp_bio_section_label_field() {
            placeholder="<?php esc_attr_e( 'About the Candidate', 'dandysite-victoria' ); ?>" />
     <p class="description">
         <?php esc_html_e( 'Small label shown above the name in the bio section. Leave blank to hide it entirely.', 'dandysite-victoria' ); ?>
+    </p>
+    <?php
+}
+
+function dsp_single_featured_image_field() {
+    $value = get_option( 'dsp_single_featured_image', '1' );
+    ?>
+    <label>
+        <input type="checkbox" name="dsp_single_featured_image" value="1" <?php checked( $value, '1' ); ?> />
+        <?php esc_html_e( 'Show the featured image at the top of single blog posts', 'dandysite-victoria' ); ?>
+    </label>
+    <p class="description">
+        <?php esc_html_e( 'Uncheck to hide featured images on single post pages sitewide. (Featured images still appear on cards and archives.)', 'dandysite-victoria' ); ?>
     </p>
     <?php
 }
