@@ -425,16 +425,23 @@ function dsp_features_section_callback() {
 }
 
 // ===== FAVICON =====
-// Place favicon files in the WordPress root directory.
+// Place favicon files (realfavicongenerator.net set) in the WordPress root
+// directory — each tag below only renders if its file exists, so sites
+// without favicons yet don't emit broken links.
 // Do NOT set a Site Icon in Appearance > Customize — these tags handle it.
 function dsp_favicon_links() {
-    ?>
-    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/site.webmanifest" />
-    <?php
+    $icons = [
+        '<link rel="icon" type="image/png" href="%s" sizes="96x96" />' => 'favicon-96x96.png',
+        '<link rel="icon" type="image/svg+xml" href="%s" />'           => 'favicon.svg',
+        '<link rel="shortcut icon" href="%s" />'                        => 'favicon.ico',
+        '<link rel="apple-touch-icon" sizes="180x180" href="%s" />'    => 'apple-touch-icon.png',
+        '<link rel="manifest" href="%s" />'                             => 'site.webmanifest',
+    ];
+    foreach ( $icons as $tag => $file ) {
+        if ( file_exists( ABSPATH . $file ) ) {
+            printf( $tag . "\n", esc_url( home_url( '/' . $file ) ) );
+        }
+    }
 }
 add_action('wp_head', 'dsp_favicon_links', 1);
 
