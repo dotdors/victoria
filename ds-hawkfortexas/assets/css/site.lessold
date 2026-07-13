@@ -1,0 +1,33 @@
+// ============================================================
+// ds-hawkfortexas — Site Color Overrides
+// Compile this to assets/css/site.css
+//
+// Pattern: redefine semantic role vars in :root.
+// Use LESS vars here so you can reference them in component styles below.
+// ============================================================
+
+// Campaign palette
+@hawk-red:         #C8102E;
+@hawk-dark:        #1a1a2e;
+@hawk-red-hover:   darken(@hawk-red, 10%);
+
+// Map to semantic roles
+@color-primary:    @hawk-dark;
+@color-secondary:  @hawk-red;
+@color-accent:     @hawk-red;
+
+// Override :root — this is all the browser needs to see
+:root {
+    --color-primary:      @color-primary;
+    --color-secondary:    @color-secondary;
+    --color-accent:       @color-accent;
+    --color-surface:      #f5f5f5;      // plain white-gray works better than Honeydew for this site
+    --color-button-bg:    @hawk-red;
+    --color-button-text:  #ffffff;
+}
+
+// ============================================================
+// Component styles — use LESS vars above, never hardcode hex
+// ============================================================
+
+// (compiled site.css content continues below or import partials here)
