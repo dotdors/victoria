@@ -31,6 +31,19 @@ Domain Path: /languages
   --color-border:       #dce8ea;
   --color-button-bg:    #e63946;
   --color-button-text:  #ffffff;
+
+  /* Dark-surface context — colors used on dark section backgrounds.
+     Override this SET in the site plugin (the "cornflower lesson":
+     accent colors are often unreadable on dark backgrounds, so every
+     site consciously chooses its on-dark palette up front). */
+  --color-dark-bg:            var(--color-primary);
+  --color-on-dark-heading:    #ffffff;
+  --color-on-dark-text:       rgba(255, 255, 255, 0.85);
+  --color-on-dark-text-light: rgba(255, 255, 255, 0.75);
+  --color-on-dark-link:       var(--color-frosted-blue);
+  --color-on-dark-link-hover: #ffffff;
+  --color-on-dark-label:      var(--color-frosted-blue);
+  --color-on-dark-border:     rgba(255, 255, 255, 0.18);
   /* Typography */
   --font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   --font-secondary: Georgia, 'Times New Roman', serif;
@@ -674,10 +687,11 @@ body.search .site-main {
     text-align: center;
     margin-bottom: 1em;
     letter-spacing: -0.01em;
+    color: var(--ctx-heading, var(--color-text));
 }
 .section-subtitle {
     text-align: center;
-    color: var(--color-text-light);
+    color: var(--ctx-text-light, var(--color-text-light));
     margin-bottom: 2.5rem;
     font-size: 1rem;
 }
@@ -745,23 +759,30 @@ a.btn:hover {
     color: #fff;
     opacity: 1;
 }
-.btn--white {
+.btn--white,
+a.btn--white {
+    /* a.btn--white needed: the a.btn base rule otherwise outranks the variant */
     background: #fff;
     color: var(--color-primary);
     border-color: #fff;
 }
-.btn--white:hover {
+.btn--white:hover,
+a.btn--white:hover {
     background: rgba(255,255,255,0.88);
+    color: var(--color-primary);
     opacity: 1;
 }
-.btn--outline-white {
+.btn--outline-white,
+a.btn--outline-white {
     background: transparent;
     color: #fff;
     border-color: rgba(255,255,255,0.7);
 }
-.btn--outline-white:hover {
+.btn--outline-white:hover,
+a.btn--outline-white:hover {
     border-color: #fff;
     background: rgba(255,255,255,0.1);
+    color: #fff;
     opacity: 1;
 }
 
@@ -787,17 +808,19 @@ a.btn:hover {
     letter-spacing: 0.12em;
     text-transform: uppercase;
     margin-bottom: 0.75rem;
-    color: var(--color-accent);
+    color: var(--ctx-label, var(--color-accent));
 }
 .section-bio__text h2 {
     font-size: clamp(1.5rem, 2.5vw, 2rem);
     font-weight: 700;
     margin-bottom: 1rem;
     line-height: 1.2;
+    color: var(--ctx-heading, var(--color-text));
 }
 .section-bio__text p {
     line-height: 1.75;
     margin-bottom: 1rem;
+    color: var(--ctx-text, var(--color-text));
 }
 .section-bio__pullquote {
     border-left: 4px solid var(--color-accent);
@@ -871,12 +894,8 @@ a.btn:hover {
 
 /* ---- Issues / Positions section ---- */
 
-.section-issues {
-    background: var(--color-primary);
-    color: #fff;
-}
-.section-issues .section-title { color: #fff; }
-.section-issues .section-subtitle { color: rgba(255,255,255,0.75); }
+/* .section-issues is dark by default — background and text colors come
+   from the Surface Context system at the bottom of this file. */
 
 .issues-grid {
     display: grid;
@@ -1159,6 +1178,20 @@ a.btn:hover {
     justify-content: center;
     gap: 1.25rem;
 }
+/* Icon sizing: the shortcode sets width/height inline on the span, but
+   a default (inline) span ignores box dimensions, and the raw SVG files
+   carry their own huge width/height attributes. inline-flex makes the
+   inline size take effect, and the svg is forced to fill the span. */
+.ds-socials__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.ds-socials__icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
 .section-connect__socials .ds-socials__link {
     color: var(--color-primary);
     transition: color 0.15s ease, transform 0.15s ease;
@@ -1172,7 +1205,7 @@ a.btn:hover {
 
 .section-get-involved {
     background: var(--color-accent);
-    color: #fff;
+    color: var(--ctx-text, #fff);
     text-align: center;
 }
 .section-get-involved .container {
@@ -1180,9 +1213,9 @@ a.btn:hover {
     margin: 0 auto;
     padding: 0 var(--spacing-md);
 }
-.section-get-involved .section-title { color: #fff; }
+.section-get-involved .section-title { color: var(--ctx-heading, #fff); }
 .section-get-involved p {
-    color: rgba(255,255,255,0.85);
+    color: var(--ctx-text, rgba(255,255,255,0.85));
     font-size: 1.05rem;
     margin-bottom: 2rem;
 }
@@ -1191,6 +1224,112 @@ a.btn:hover {
     gap: 1rem;
     justify-content: center;
     flex-wrap: wrap;
+}
+
+/* Media kit download link (rendered when a media kit is uploaded in
+   Homepage Settings). Remaps --ctx-link locally so the link uses the
+   section's TEXT color for reliable contrast on any CTA background. */
+.get-involved__media-kit {
+    margin-top: 1.5rem;
+    font-size: 0.85rem;
+    --ctx-link:       var(--ctx-text, var(--color-accent));
+    --ctx-link-hover: var(--ctx-heading, var(--color-accent));
+}
+.get-involved__media-kit a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+/* ===== SURFACE CONTEXTS =====
+   Per-section background system.
+
+   Homepage Settings assigns each section a background:
+   default / light / surface / dark → dsp_section_bg_class() adds
+   .section--light, .section--surface, or .section--dark.
+
+   How it works: components consume --ctx-* tokens with light-context
+   fallbacks, e.g.  color: var(--ctx-heading, var(--color-text));
+   Context classes define (or remap) the --ctx-* set. Sections that are
+   dark/branded by default (.section-issues, .section-get-involved)
+   carry the dark tokens automatically.
+
+   Site plugins theme dark surfaces ONCE by overriding the
+   --color-on-dark-* set in :root — never per-component.
+
+   NOTE: This block must stay at the end of the section styles so the
+   context classes win the cascade over per-section defaults. */
+
+.section--dark,
+.section-issues,
+.section-get-involved {
+    color: var(--color-on-dark-text);
+    --ctx-heading:    var(--color-on-dark-heading);
+    --ctx-text:       var(--color-on-dark-text);
+    --ctx-text-light: var(--color-on-dark-text-light);
+    --ctx-link:       var(--color-on-dark-link);
+    --ctx-link-hover: var(--color-on-dark-link-hover);
+    --ctx-label:      var(--color-on-dark-label);
+    --ctx-border:     var(--color-on-dark-border);
+}
+.section--dark,
+.section-issues {
+    background: var(--color-dark-bg);
+}
+
+/* Links on dark surfaces (buttons keep their own colors) */
+.section--dark a:not(.btn):not(.button),
+.section-issues a:not(.btn):not(.button),
+.section-get-involved a:not(.btn):not(.button) {
+    color: var(--ctx-link);
+}
+.section--dark a:not(.btn):not(.button):hover,
+.section-issues a:not(.btn):not(.button):hover,
+.section-get-involved a:not(.btn):not(.button):hover {
+    color: var(--ctx-link-hover);
+}
+
+/* strong/b default to --color-primary, which can vanish on dark */
+.section--dark strong,
+.section--dark b,
+.section-issues strong,
+.section-issues b,
+.section-get-involved strong,
+.section-get-involved b {
+    color: inherit;
+}
+
+/* Bio pullquote on a dark surface — translucent panel instead of light surface */
+.section--dark .section-bio__pullquote {
+    background: rgba(255, 255, 255, 0.08);
+    border-left-color: var(--ctx-link);
+    color: var(--ctx-text);
+}
+
+/* Light + surface contexts — remap ctx tokens back to light values.
+   Placed after the dark block so they win when a default-dark section
+   is switched to a light background in Homepage Settings. */
+.section--surface,
+.section--light {
+    color: var(--color-text);
+    --ctx-heading:    var(--color-text);
+    --ctx-text:       var(--color-text);
+    --ctx-text-light: var(--color-text-light);
+    --ctx-link:       var(--color-accent);
+    --ctx-link-hover: var(--color-accent);
+    --ctx-label:      var(--color-accent);
+    --ctx-border:     var(--color-border);
+}
+.section--surface { background: var(--color-surface); }
+.section--light   { background: var(--color-background); }
+
+/* ===== EMBEDDED SECTIONS =====
+   [ds_section name="..."] renders a homepage section inside page
+   content. The wrapper breaks out of the content column so the section
+   background runs full width, exactly as on the homepage; the section's
+   own .container re-centers the content inside it. */
+.ds-embedded-section {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
 }
 
 /* ---- Article publication bar (single post) ---- */

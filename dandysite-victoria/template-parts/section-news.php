@@ -49,7 +49,7 @@ $news_query = new WP_Query( [
 if ( ! $news_query->have_posts() ) return;
 ?>
 
-<section class="section-news" id="news">
+<section class="section-news<?php echo esc_attr( dsp_section_bg_class( 'news' ) ); ?>" id="news">
     <div class="container">
 
         <h2 class="section-title"><?php echo esc_html( $section_title ); ?></h2>

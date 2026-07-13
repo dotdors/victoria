@@ -23,6 +23,7 @@
 - [x] **Surface Context system** — dark/light/surface per-section backgrounds; `--color-on-dark-*` token set + `--ctx-*` consumption pattern; Background dropdown in Homepage Settings (the "cornflower lesson" fix)
 - [x] ds-sarahstogner plugin scaffolded — ink & cream editorial direction (Besley + Source Serif 4, oxblood accent)
 - [x] CTA section content (heading/text/buttons) editable in Homepage Settings; site plugins seed defaults on activation
+- [x] Fixed social icon sizing (icon span was inline so the shortcode size never applied; SVGs rendered at their raw 800px attributes)
 - [x] `[ds_section]` shortcode — embed any homepage section on regular pages, with optional per-embed background override
 - [x] Hero body content — front-page block content renders in the hero under headline/tagline (`.hero__body`)
 - [x] ds-sarahstogner: boxed editorial split hero (container-width, centered, hairline frame, cream panel)

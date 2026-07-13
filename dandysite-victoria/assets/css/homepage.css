@@ -278,6 +278,15 @@
     overflow: hidden;
 }
 
+.hero__body {
+    margin-top: 1.25rem;
+    max-width: 60ch;
+    line-height: 1.7;
+}
+.hero__body p { margin-bottom: 1em; }
+.hero__body p:last-child { margin-bottom: 0; }
+.hero__body + .hero__cta { margin-top: 1.5rem; }
+
 .hero__logo-link {
     display: inline-block;
     line-height: 0;

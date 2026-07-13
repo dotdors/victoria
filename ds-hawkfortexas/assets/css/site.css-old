@@ -341,12 +341,3 @@ h1, h2, h3, h4, h5, h6,
 .footer-secondary {
     border-top: none;
 }
-
-/* ============================================================
-   SOCIAL ICONS — larger than theme default
-   (requires Victoria with the --ds-socials-size system)
-   ============================================================ */
-
-.ds-socials .ds-socials__icon {
-    --ds-socials-size: 48px;
-}

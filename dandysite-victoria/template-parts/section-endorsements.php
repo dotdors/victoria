@@ -23,7 +23,7 @@ if ( $layout === 'carousel' && count( $endorsements ) > 1 ) {
 }
 ?>
 
-<section class="section-endorsements" id="endorsements">
+<section class="section-endorsements<?php echo esc_attr( dsp_section_bg_class( 'endorsements' ) ); ?>" id="endorsements">
     <div class="container">
 
         <h2 class="section-title"><?php echo esc_html( $section_title ); ?></h2>

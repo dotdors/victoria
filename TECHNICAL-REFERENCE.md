@@ -135,7 +135,33 @@ The site plugin's stylesheet loads after Victoria's (`['dsp-style']` dependency)
 --color-border
 --color-button-bg
 --color-button-text
+
+/* Dark-surface context (override this SET in site plugin) */
+--color-dark-bg              /* background of dark sections; default: var(--color-primary) */
+--color-on-dark-heading
+--color-on-dark-text
+--color-on-dark-text-light
+--color-on-dark-link         /* accent usable ON dark — often NOT the brand accent */
+--color-on-dark-link-hover
+--color-on-dark-label        /* section eyebrows on dark */
+--color-on-dark-border
 ```
+
+### Surface Context System
+
+Every homepage section can sit on a **light**, **surface**, or **dark** background, assigned per section in **Appearance → Homepage Settings → Section Order & Backgrounds** (stored as `dsp_hp_bg_{section}`, default `'default'` = the section's built-in background). `dsp_section_bg_class( $section )` returns the context class (` section--light` / ` section--surface` / ` section--dark`, filterable via `dsp_section_bg_class`), and each section template appends it to its wrapper.
+
+**How theming works:** components consume `--ctx-*` tokens with light-context fallbacks, e.g.
+
+```css
+.section-title { color: var(--ctx-heading, var(--color-text)); }
+```
+
+Context classes define the `--ctx-*` set — `.section--dark` maps them to the `--color-on-dark-*` tokens; `.section--light` / `.section--surface` map them back to light values. Sections that are dark or branded by default (`.section-issues`, `.section-get-involved`) carry the dark tokens automatically, no class needed.
+
+**The rule for site plugins:** never re-style dark sections component-by-component. Override the `--color-on-dark-*` set once in `:root` and every dark surface — current and future — follows. This exists because brand accents are frequently unreadable on dark backgrounds (Hawk's red-on-navy needed a cornflower substitute); `--color-on-dark-link` forces that decision up front. The `SURFACE CONTEXTS` block must remain at the **end** of the section styles in `style.css` so context classes win the cascade over per-section defaults.
+
+Ctx tokens available inside any section: `--ctx-heading`, `--ctx-text`, `--ctx-text-light`, `--ctx-link`, `--ctx-link-hover`, `--ctx-label`, `--ctx-border`.
 
 ---
 
@@ -191,19 +217,50 @@ dsp_get_positions( $homepage_only = false )
 
 ## Homepage System
 
-### Section Order
+### Embedding Homepage Sections — [ds_section]
 
-`front-page.php` assembles the homepage from an ordered list of section slugs, filterable by the site plugin:
+Any homepage section can be rendered on a regular page or post with the `[ds_section]` shortcode (via a Shortcode block):
+
+```
+[ds_section name="news"]
+[ds_section name="get-involved" bg="dark"]
+```
+
+Valid names: `bio`, `issues`, `articles`, `news`, `endorsements`, `get-involved`, `connect`. The optional `bg` attribute (`default` / `light` / `surface` / `dark`) overrides the Homepage Settings background for that render only. Embeds ignore the homepage show/hide checkboxes — a section hidden on the homepage can still be embedded elsewhere. Output is wrapped in `.ds-embedded-section`, which breaks out of the page content column to run full width. Sections keep their homepage element IDs, so avoid embedding the same section twice on one page. Unknown names print an inline hint to logged-in editors and nothing to visitors.
+
+### Hero Body Content
+
+On the **front page only**, if the page has block content, the hero renders it in a `.hero__body` div under the headline/tagline and above the CTA. This lets sites put real, block-edited text in the hero without a new meta field. It is deliberately scoped to `is_front_page()` — the standalone hero page templates already output `the_content()` below the hero. `dsp_get_hero_meta()` now includes `post_id` in its return array.
+
+### Hero Show/Hide
+
+The hero can be hidden like any other section (`dsp_hp_show_hero`, Homepage Settings → Hero). When hidden on the homepage, `dsp_get_header_style()` forces the solid header style regardless of the default setting or per-page meta, since an overlay header would sit on top of the first content section.
+
+### Get Involved / CTA Settings & Media Kit
+
+The CTA section's heading, text, and up to three buttons (label / URL / solid-or-outline style) are editable in **Appearance → Homepage Settings → Get Involved / CTA**. Blank heading/text falls back to the theme defaults; the form prefills the theme's default buttons the first time so saving never changes a site that hasn't customized them. The `dsp_cta_title` / `dsp_cta_text` / `dsp_cta_actions` filters still run after settings for programmatic overrides. Site plugins can seed officeholder-mode content on activation (see ds-sarahstogner's `dsss_seed_cta_defaults()` — seeds only options that have never been set).
+
+A **media kit** (PDF/ZIP attachment, `dsp_hp_media_kit_id`) can be uploaded in the same settings panel; when set, a "Download Media Kit" link renders at the bottom of the CTA section (`.get-involved__media-kit`, label filterable via `dsp_media_kit_label`). The link locally remaps `--ctx-link` to the section's text color, so it stays readable on accent, dark, or light CTA backgrounds.
+
+### Section Order & Backgrounds
+
+The Section Order table in Homepage Settings also has a **Background** dropdown per section (Default / Light / Surface / Dark) — see the Surface Context System section above. Hero is excluded (it has its own image/overlay system).
+
+Sections render inside a `.homepage-sections` flex-column wrapper, and each section gets a CSS `order` value editable in **Appearance → Homepage Settings → Section Order & Backgrounds**. Values are spaced by 10 (hero 0, bio 10, issues 20, articles 30, news 40, endorsements 50, get-involved 60, connect 70) so a section can be slotted between two others without renumbering. Defaults live in `dsp_hp_section_order_defaults()` (`includes/homepage-settings.php`); values are stored as `dsp_hp_order_{section}` options (hyphens become underscores, e.g. `dsp_hp_order_get_involved`). The generated CSS is filterable via `dsp_homepage_order_css`, and site plugins can still override with their own `order` rules.
+
+`front-page.php` also assembles the homepage from an ordered list of section slugs, filterable by the site plugin:
 
 ```php
-// Default order
+// Default section list (visibility toggled in Homepage Settings)
 $sections = apply_filters( 'dsp_homepage_sections', [
     'hero',
     'bio',
     'issues',
+    'articles',
     'news',
     'endorsements',
     'get-involved',
+    'connect',
 ] );
 ```
 
@@ -249,6 +306,30 @@ Each section exposes filters for its title and subtitle:
 | `dsp_cta_title` | "Get Involved" |
 | `dsp_cta_text` | (default body copy) |
 | `dsp_cta_actions` | Array of volunteer/donate/signup buttons |
+| `dsp_connect_heading` | "Get in Touch" |
+| `dsp_connect_text` | (Homepage Settings value) |
+| `dsp_connect_email` | (Homepage Settings value) |
+| `dsp_show_single_featured_image` | Theme Settings toggle (bool, post ID passed) |
+| `dsp_homepage_order_css` | Generated section-order CSS string |
+
+### Bio Image Options
+
+**Appearance → Homepage Settings → Bio** controls the bio section image:
+
+- **Image display** (`dsp_hp_bio_image_mode`): `featured` (beside text, default), `none` (text only, centered column), or `background` (image fills the section with a darkening gradient; text overlays in white, right-aligned on desktop).
+- **Image override** (`dsp_hp_bio_image_id`): media-library picker; overrides the Bio page's Featured Image in either display mode. `0` = use featured image.
+
+### Endorsements Layout
+
+**Appearance → Homepage Settings → Endorsements → Layout** (`dsp_hp_endorsements_layout`): `grid` (default) or `carousel`. Carousel crossfades one card at a time — auto-advances every 7s (`data-interval` on `.endorsements-grid`), pauses on hover/focus, dot navigation, respects `prefers-reduced-motion`. JS (`assets/js/endorsements.js`) is enqueued only on the front page when carousel is selected. No-JS fallback: styles are gated behind the `.is-ready` class, so cards degrade to a stacked list.
+
+### Contact / Connect Section
+
+`template-parts/section-connect.php` — heading, short paragraph, prominent mailto link (email obfuscated via `antispambot()`), and social icons pulled from the `[ds_socials]` platform registry. Content configured in **Homepage Settings → Contact / Connect** (`dsp_hp_connect_heading`, `dsp_hp_connect_text`, `dsp_hp_connect_email`, toggle `dsp_hp_show_connect`). Section skips itself if all three are empty. Contact form option planned; starting with the mailto approach.
+
+### Single Post Featured Image
+
+**Appearance → Theme Settings → Single Post Featured Image** (`dsp_single_featured_image`, default on) controls whether the featured image renders at the top of single posts sitewide. Filterable per-post via `dsp_show_single_featured_image`. Image is now styled: full-width, 480px max-height crop, rounded corners, shadow.
 
 ### Hero
 
@@ -316,7 +397,12 @@ ds-sitename/
 ```
 
 ### Enqueue order
-Victoria's `dsp-style` loads first. Site plugin declares `['dsp-style']` as a dependency, ensuring correct cascade order for CSS variable overrides.
+
+Site plugins MUST hook `wp_enqueue_scripts` at **priority 20** (theme uses default 10). Plugins load before themes, so at a tied priority the plugin's callback runs first and `site.css` prints before conditionally-loaded theme styles (`homepage.css`, `footer.css`), letting the theme win the cascade. Priority 20 guarantees `site.css` always prints last. The `['dsp-style', 'dsp-header-style']` dependency array is kept as a load guard, but the priority is what actually fixes ordering against all Victoria stylesheets.
+
+```php
+add_action('wp_enqueue_scripts', 'dsxx_enqueue_assets', 20);
+```
 
 ---
 

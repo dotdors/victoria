@@ -33,7 +33,7 @@ $socials = function_exists( 'dsp_socials_shortcode' ) ? dsp_socials_shortcode( [
 if ( ! $email && ! $socials && ! $text ) return;
 ?>
 
-<section class="section-connect" id="connect">
+<section class="section-connect<?php echo esc_attr( dsp_section_bg_class( 'connect' ) ); ?>" id="connect">
     <div class="container">
 
         <h2 class="section-title"><?php echo esc_html( $heading ); ?></h2>

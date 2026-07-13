@@ -8,6 +8,7 @@
  * items each section shows, and which categories feed each section.
  *
  * Options stored:
+ *   dsp_hp_show_hero              bool    default true (header forces solid style when hero is off)
  *   dsp_hp_show_bio               bool    default true
  *   dsp_hp_bio_image_mode         string  'featured' | 'none' | 'background'  default 'featured'
  *   dsp_hp_bio_image_id           int     attachment ID override (0 = use featured image)
@@ -22,11 +23,25 @@
  *   dsp_hp_endorsements_count     int     default 6
  *   dsp_hp_endorsements_layout    string  'grid' | 'carousel'  default 'grid'
  *   dsp_hp_show_cta               bool    default true
+ *   dsp_hp_cta_title              string  CTA heading; '' = theme default ('Get Involved')
+ *   dsp_hp_cta_text               string  CTA paragraph; '' = theme default
+ *   dsp_hp_cta_btn{1-3}_label     string  button label; blank = button hidden
+ *   dsp_hp_cta_btn{1-3}_url       string  button URL
+ *   dsp_hp_cta_btn{1-3}_style     string  'solid' | 'outline'
+ *                                         (If no button options have ever been saved, the theme's
+ *                                         default Volunteer/Donate/Stay Informed set is shown.)
+ *   dsp_hp_media_kit_id           int     attachment ID of the downloadable media kit (0 = none).
+ *                                         When set, a "Download Media Kit" link renders at the
+ *                                         bottom of the Get Involved / CTA section.
  *   dsp_hp_show_connect           bool    default true
  *   dsp_hp_connect_heading        string  default 'Get in Touch'
  *   dsp_hp_connect_text           string
  *   dsp_hp_connect_email          string
  *   dsp_hp_order_{section}        int     CSS order value per section (see defaults below)
+ *   dsp_hp_bg_{section}           string  'default' | 'light' | 'surface' | 'dark'  default 'default'
+ *                                         Applies a Surface Context class (see style.css) to the
+ *                                         section wrapper. 'default' = the section's built-in
+ *                                         background (issues = dark, get-involved = accent, etc.)
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -49,6 +64,25 @@ function dsp_hp_section_order_defaults() {
         'get-involved' => 60,
         'connect'      => 70,
     ];
+}
+
+// ============================================================
+// SECTION BACKGROUND (Surface Context)
+// ============================================================
+// Each section can be assigned a background in Homepage Settings.
+// Returns the context class (with a leading space) to append to the
+// section wrapper's class attribute, or '' for the built-in default.
+// Context classes are defined in style.css → SURFACE CONTEXTS.
+
+function dsp_section_bg_class( $section ) {
+    $value = get_option( 'dsp_hp_bg_' . str_replace( '-', '_', $section ), 'default' );
+    $map = [
+        'light'   => ' section--light',
+        'surface' => ' section--surface',
+        'dark'    => ' section--dark',
+    ];
+    $class = $map[ $value ] ?? '';
+    return apply_filters( 'dsp_section_bg_class', $class, $section );
 }
 
 // ============================================================
@@ -86,6 +120,7 @@ function dsp_hp_save_settings() {
 
     // Booleans (checkboxes)
     $bools = [
+        'dsp_hp_show_hero',
         'dsp_hp_show_bio',
         'dsp_hp_show_issues',
         'dsp_hp_show_articles',
@@ -104,6 +139,7 @@ function dsp_hp_save_settings() {
         'dsp_hp_news_count',
         'dsp_hp_endorsements_count',
         'dsp_hp_bio_image_id',
+        'dsp_hp_media_kit_id',
     ];
     foreach ( $ints as $key ) {
         if ( isset( $_POST[ $key ] ) ) {
@@ -116,6 +152,17 @@ function dsp_hp_save_settings() {
         $field = 'dsp_hp_order_' . str_replace( '-', '_', $section );
         if ( isset( $_POST[ $field ] ) ) {
             update_option( $field, intval( $_POST[ $field ] ) );
+        }
+    }
+
+    // Section backgrounds (whitelist; hero excluded)
+    foreach ( array_keys( dsp_hp_section_order_defaults() ) as $section ) {
+        if ( $section === 'hero' ) continue;
+        $field = 'dsp_hp_bg_' . str_replace( '-', '_', $section );
+        if ( isset( $_POST[ $field ] ) ) {
+            $bg = in_array( $_POST[ $field ], [ 'default', 'light', 'surface', 'dark' ], true )
+                ? $_POST[ $field ] : 'default';
+            update_option( $field, $bg );
         }
     }
 
@@ -139,6 +186,29 @@ function dsp_hp_save_settings() {
     }
     if ( isset( $_POST['dsp_hp_connect_text'] ) ) {
         update_option( 'dsp_hp_connect_text', sanitize_textarea_field( wp_unslash( $_POST['dsp_hp_connect_text'] ) ) );
+    }
+
+    // CTA section text fields
+    if ( isset( $_POST['dsp_hp_cta_title'] ) ) {
+        update_option( 'dsp_hp_cta_title', sanitize_text_field( wp_unslash( $_POST['dsp_hp_cta_title'] ) ) );
+    }
+    if ( isset( $_POST['dsp_hp_cta_text'] ) ) {
+        update_option( 'dsp_hp_cta_text', sanitize_textarea_field( wp_unslash( $_POST['dsp_hp_cta_text'] ) ) );
+    }
+
+    // CTA buttons (3 slots)
+    for ( $i = 1; $i <= 3; $i++ ) {
+        if ( isset( $_POST[ "dsp_hp_cta_btn{$i}_label" ] ) ) {
+            update_option( "dsp_hp_cta_btn{$i}_label", sanitize_text_field( wp_unslash( $_POST[ "dsp_hp_cta_btn{$i}_label" ] ) ) );
+        }
+        if ( isset( $_POST[ "dsp_hp_cta_btn{$i}_url" ] ) ) {
+            update_option( "dsp_hp_cta_btn{$i}_url", esc_url_raw( wp_unslash( $_POST[ "dsp_hp_cta_btn{$i}_url" ] ) ) );
+        }
+        if ( isset( $_POST[ "dsp_hp_cta_btn{$i}_style" ] ) ) {
+            $btn_style = in_array( $_POST[ "dsp_hp_cta_btn{$i}_style" ], [ 'solid', 'outline' ], true )
+                ? $_POST[ "dsp_hp_cta_btn{$i}_style" ] : 'solid';
+            update_option( "dsp_hp_cta_btn{$i}_style", $btn_style );
+        }
     }
     if ( isset( $_POST['dsp_hp_connect_email'] ) ) {
         update_option( 'dsp_hp_connect_email', sanitize_email( wp_unslash( $_POST['dsp_hp_connect_email'] ) ) );
@@ -188,6 +258,7 @@ function dsp_hp_settings_page() {
     $end_count         = get_option( 'dsp_hp_endorsements_count', 6 );
     $end_layout        = get_option( 'dsp_hp_endorsements_layout','grid' );
     $show_cta          = get_option( 'dsp_hp_show_cta',           '1' );
+    $show_hero         = get_option( 'dsp_hp_show_hero',          '1' );
     $show_connect      = get_option( 'dsp_hp_show_connect',       '1' );
     $connect_heading   = get_option( 'dsp_hp_connect_heading',    __( 'Get in Touch', 'dandysite-victoria' ) );
     $connect_text      = get_option( 'dsp_hp_connect_text',       '' );
@@ -225,22 +296,57 @@ function dsp_hp_settings_page() {
                 'get-involved' => __( 'Get Involved / CTA', 'dandysite-victoria' ),
                 'connect'      => __( 'Contact / Connect', 'dandysite-victoria' ),
             ];
-            $order_rows = '';
+            $bg_choices = [
+                'default' => __( 'Default (built-in)', 'dandysite-victoria' ),
+                'light'   => __( 'Light — page background', 'dandysite-victoria' ),
+                'surface' => __( 'Surface — tinted', 'dandysite-victoria' ),
+                'dark'    => __( 'Dark', 'dandysite-victoria' ),
+            ];
+            $order_rows = '<tr>
+                <th style="text-align:left;padding:2px 12px 6px 0;">' . esc_html__( 'Section', 'dandysite-victoria' ) . '</th>
+                <th style="text-align:left;padding:2px 12px 6px 0;">' . esc_html__( 'Order', 'dandysite-victoria' ) . '</th>
+                <th style="text-align:left;padding:2px 0 6px;">' . esc_html__( 'Background', 'dandysite-victoria' ) . '</th>
+            </tr>';
             foreach ( dsp_hp_section_order_defaults() as $key => $default ) {
                 $field = 'dsp_hp_order_' . str_replace( '-', '_', $key );
                 $value = (int) get_option( $field, $default );
                 $disabled = ( $key === 'hero' ) ? 'readonly style="width:60px;background:#f0f0f1;"' : 'style="width:60px;"';
+
+                // Background dropdown (hero keeps its own image/overlay system)
+                if ( $key === 'hero' ) {
+                    $bg_cell = '<span style="color:#888;">&mdash;</span>';
+                } else {
+                    $bg_field = 'dsp_hp_bg_' . str_replace( '-', '_', $key );
+                    $bg_value = get_option( $bg_field, 'default' );
+                    $bg_cell  = '<select name="' . esc_attr( $bg_field ) . '">';
+                    foreach ( $bg_choices as $choice => $label ) {
+                        $bg_cell .= '<option value="' . esc_attr( $choice ) . '" ' . selected( $bg_value, $choice, false ) . '>' . esc_html( $label ) . '</option>';
+                    }
+                    $bg_cell .= '</select>';
+                }
+
                 $order_rows .= '<tr>
                     <td style="padding:2px 12px 2px 0;">' . esc_html( $order_labels[ $key ] ) . '</td>
-                    <td style="padding:2px 0;"><input type="number" name="' . esc_attr( $field ) . '" value="' . esc_attr( $value ) . '" step="1" ' . $disabled . '></td>
+                    <td style="padding:2px 12px 2px 0;"><input type="number" name="' . esc_attr( $field ) . '" value="' . esc_attr( $value ) . '" step="1" ' . $disabled . '></td>
+                    <td style="padding:2px 0;">' . $bg_cell . '</td>
                 </tr>';
             }
-            dsp_hp_section( 'Section Order', '
+            dsp_hp_section( 'Section Order & Backgrounds', '
                 <p class="description" style="margin-bottom:8px;">' . esc_html__( 'Lower numbers appear first. Values map to CSS order properties, spaced by 10 so you can slot a section between two others. Hero is always first. Site plugins can still override with CSS.', 'dandysite-victoria' ) . '</p>
+                <p class="description" style="margin-bottom:8px;">' . esc_html__( 'Background applies a surface context to the section: Light (page background), Surface (tinted), or Dark (uses the site\'s dark-surface colors). Default keeps each section\'s built-in background — Issues is dark and Get Involved uses the accent color by default.', 'dandysite-victoria' ) . '</p>
                 <table>' . $order_rows . '</table>
             ' );
 
             // ---- Bio ----
+            // ---- Hero ----
+            dsp_hp_section( 'Hero', '
+                <label>
+                    <input type="checkbox" name="dsp_hp_show_hero" value="1" ' . checked( $show_hero, '1', false ) . '>
+                    ' . esc_html__( 'Show this section', 'dandysite-victoria' ) . '
+                </label>
+                <p class="description">' . esc_html__( 'When the hero is hidden, the header automatically uses the solid style on the homepage (there is nothing to overlay).', 'dandysite-victoria' ) . '</p>
+            ' );
+
             dsp_hp_section( 'Bio / Meet the Candidate', '
                 <label>
                     <input type="checkbox" name="dsp_hp_show_bio" value="1" ' . checked( $show_bio, '1', false ) . '>
@@ -361,11 +467,70 @@ function dsp_hp_settings_page() {
             ' );
 
             // ---- CTA ----
+            $cta_title = get_option( 'dsp_hp_cta_title', '' );
+            $cta_text  = get_option( 'dsp_hp_cta_text', '' );
+
+            // If the button fields have never been saved, prefill the form
+            // with the theme defaults so the first save preserves the
+            // section exactly as it renders today.
+            $cta_btn_defaults = [
+                1 => [ __( 'Volunteer', 'dandysite-victoria' ),     '#volunteer', 'solid'   ],
+                2 => [ __( 'Donate', 'dandysite-victoria' ),        '#donate',    'outline' ],
+                3 => [ __( 'Stay Informed', 'dandysite-victoria' ), '#signup',    'solid'   ],
+            ];
+            $cta_never_saved = ( false === get_option( 'dsp_hp_cta_btn1_label', false ) );
+
+            $media_kit_id   = (int) get_option( 'dsp_hp_media_kit_id', 0 );
+            $media_kit_name = $media_kit_id ? basename( (string) get_attached_file( $media_kit_id ) ) : '';
+
+            $cta_btn_rows = '<tr>
+                <th style="text-align:left;padding:2px 12px 6px 0;">' . esc_html__( 'Label', 'dandysite-victoria' ) . '</th>
+                <th style="text-align:left;padding:2px 12px 6px 0;">' . esc_html__( 'URL', 'dandysite-victoria' ) . '</th>
+                <th style="text-align:left;padding:2px 0 6px;">' . esc_html__( 'Style', 'dandysite-victoria' ) . '</th>
+            </tr>';
+            for ( $i = 1; $i <= 3; $i++ ) {
+                if ( $cta_never_saved ) {
+                    list( $b_label, $b_url, $b_style ) = $cta_btn_defaults[ $i ];
+                } else {
+                    $b_label = get_option( "dsp_hp_cta_btn{$i}_label", '' );
+                    $b_url   = get_option( "dsp_hp_cta_btn{$i}_url", '' );
+                    $b_style = get_option( "dsp_hp_cta_btn{$i}_style", 'solid' );
+                }
+                $cta_btn_rows .= '<tr>
+                    <td style="padding:2px 12px 2px 0;"><input type="text" name="dsp_hp_cta_btn' . $i . '_label" value="' . esc_attr( $b_label ) . '" style="width:160px;"></td>
+                    <td style="padding:2px 12px 2px 0;"><input type="text" name="dsp_hp_cta_btn' . $i . '_url" value="' . esc_attr( $b_url ) . '" class="regular-text" placeholder="https:// or #anchor"></td>
+                    <td style="padding:2px 0;"><select name="dsp_hp_cta_btn' . $i . '_style">
+                        <option value="solid" '   . selected( $b_style, 'solid', false )   . '>' . esc_html__( 'Solid', 'dandysite-victoria' )   . '</option>
+                        <option value="outline" ' . selected( $b_style, 'outline', false ) . '>' . esc_html__( 'Outline', 'dandysite-victoria' ) . '</option>
+                    </select></td>
+                </tr>';
+            }
             dsp_hp_section( 'Get Involved / CTA', '
                 <label>
                     <input type="checkbox" name="dsp_hp_show_cta" value="1" ' . checked( $show_cta, '1', false ) . '>
                     ' . esc_html__( 'Show this section', 'dandysite-victoria' ) . '
                 </label>
+                <p></p>
+                <label style="display:block;margin-bottom:8px;">' . esc_html__( 'Heading:', 'dandysite-victoria' ) . '<br>
+                    <input type="text" name="dsp_hp_cta_title" value="' . esc_attr( $cta_title ) . '" class="regular-text" placeholder="' . esc_attr__( 'Get Involved', 'dandysite-victoria' ) . '">
+                </label>
+                <label style="display:block;margin-bottom:8px;">' . esc_html__( 'Text:', 'dandysite-victoria' ) . '<br>
+                    <textarea name="dsp_hp_cta_text" rows="3" class="large-text" placeholder="' . esc_attr__( 'Join the movement. Volunteer your time, make a donation, or sign up to stay informed.', 'dandysite-victoria' ) . '">' . esc_textarea( $cta_text ) . '</textarea>
+                </label>
+                <p class="description">' . esc_html__( 'Leave heading/text blank to use the theme defaults shown as placeholders.', 'dandysite-victoria' ) . '</p>
+                <strong>' . esc_html__( 'Buttons:', 'dandysite-victoria' ) . '</strong>
+                <p class="description" style="margin:4px 0 8px;">' . esc_html__( 'Buttons with a blank label are hidden. If none of these fields have ever been saved, the theme default buttons (Volunteer / Donate / Stay Informed) are shown.', 'dandysite-victoria' ) . '</p>
+                <table>' . $cta_btn_rows . '</table>
+                <p></p>
+                <strong>' . esc_html__( 'Media Kit:', 'dandysite-victoria' ) . '</strong>
+                <p class="description" style="margin:4px 0 8px;">' . esc_html__( 'Upload a media kit (PDF or ZIP). When set, a "Download Media Kit" link appears at the bottom of this section.', 'dandysite-victoria' ) . '</p>
+                <input type="hidden" name="dsp_hp_media_kit_id" id="dsp_hp_media_kit_id" value="' . esc_attr( $media_kit_id ) . '">
+                <p id="dsp-media-kit-current" style="' . ( $media_kit_id ? '' : 'display:none;' ) . 'margin:0 0 8px;">
+                    <span class="dashicons dashicons-media-document" style="vertical-align:middle;"></span>
+                    <code id="dsp-media-kit-filename">' . esc_html( $media_kit_name ) . '</code>
+                </p>
+                <button type="button" class="button" id="dsp-media-kit-select">' . esc_html__( 'Choose File', 'dandysite-victoria' ) . '</button>
+                <button type="button" class="button" id="dsp-media-kit-remove" ' . ( $media_kit_id ? '' : 'style="display:none;"' ) . '>' . esc_html__( 'Remove', 'dandysite-victoria' ) . '</button>
             ' );
 
             // ---- Connect ----
@@ -419,6 +584,32 @@ function dsp_hp_settings_page() {
             e.preventDefault();
             $('#dsp_hp_bio_image_id').val('0');
             $('#dsp-bio-image-preview').hide();
+            $(this).hide();
+        });
+
+        // Media library picker for the media kit (any file type)
+        var kitFrame;
+        $('#dsp-media-kit-select').on('click', function(e){
+            e.preventDefault();
+            if (kitFrame) { kitFrame.open(); return; }
+            kitFrame = wp.media({
+                title: '<?php echo esc_js( __( 'Choose Media Kit', 'dandysite-victoria' ) ); ?>',
+                button: { text: '<?php echo esc_js( __( 'Use this file', 'dandysite-victoria' ) ); ?>' },
+                multiple: false
+            });
+            kitFrame.on('select', function(){
+                var att = kitFrame.state().get('selection').first().toJSON();
+                $('#dsp_hp_media_kit_id').val(att.id);
+                $('#dsp-media-kit-filename').text(att.filename || att.title);
+                $('#dsp-media-kit-current').show();
+                $('#dsp-media-kit-remove').show();
+            });
+            kitFrame.open();
+        });
+        $('#dsp-media-kit-remove').on('click', function(e){
+            e.preventDefault();
+            $('#dsp_hp_media_kit_id').val('0');
+            $('#dsp-media-kit-current').hide();
             $(this).hide();
         });
     });

@@ -48,7 +48,7 @@ $view_all_url = $blog_page_id ? get_permalink( $blog_page_id ) : home_url( '/blo
 $view_all_url = apply_filters( 'dsp_articles_view_all_url', $view_all_url );
 ?>
 
-<section class="section-articles" id="articles">
+<section class="section-articles<?php echo esc_attr( dsp_section_bg_class( 'articles' ) ); ?>" id="articles">
     <div class="container">
 
         <h2 class="section-title"><?php echo esc_html( $section_title ); ?></h2>

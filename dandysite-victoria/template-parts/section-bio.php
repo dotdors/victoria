@@ -47,7 +47,7 @@ $section_label = get_option( 'dsp_bio_section_label', '' );
 $section_label = apply_filters( 'dsp_bio_section_label', $section_label );
 $read_more     = apply_filters( 'dsp_bio_read_more_text', __( 'Read More', 'dandysite-victoria' ) );
 
-$section_classes = 'section-bio';
+$section_classes = 'section-bio' . dsp_section_bg_class( 'bio' );
 if ( $bg_url ) {
     $section_classes .= ' section-bio--bg';
 } elseif ( ! $bio_image ) {

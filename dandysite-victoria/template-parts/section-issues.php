@@ -14,11 +14,11 @@ $section_title    = apply_filters( 'dsp_issues_title',    __( 'Issues & Position
 $section_subtitle = apply_filters( 'dsp_issues_subtitle', __( 'Where I Stand', 'dandysite-victoria' ) );
 ?>
 
-<section class="section-issues" id="issues">
+<section class="section-issues<?php echo esc_attr( dsp_section_bg_class( 'issues' ) ); ?>" id="issues">
     <div class="container">
 
-        <h2 class="section-title section-title--white"><?php echo esc_html( $section_title ); ?></h2>
-        <p class="section-subtitle section-subtitle--white"><?php echo esc_html( $section_subtitle ); ?></p>
+        <h2 class="section-title"><?php echo esc_html( $section_title ); ?></h2>
+        <p class="section-subtitle"><?php echo esc_html( $section_subtitle ); ?></p>
 
         <div class="issues-grid">
             <?php foreach ( $positions as $position ) :

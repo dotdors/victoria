@@ -41,6 +41,22 @@ if ( ! empty( $hero['tagline'] ) ) : ?>
     <p class="hero__tagline"><?php echo esc_html( $hero['tagline'] ); ?></p>
 <?php endif;
 
+// ---- Body content (page blocks) — FRONT PAGE ONLY ----
+// On the front page, the page's block content is otherwise unused
+// (front-page.php renders the homepage sections), so if content
+// exists, render it in the hero under the headline/tagline.
+// Scoped to is_front_page(): the standalone hero page templates
+// already output the_content() below the hero, and rendering it
+// here too would duplicate it.
+if ( is_front_page() && ! empty( $hero['post_id'] ) ) :
+    $hero_page = get_post( $hero['post_id'] );
+    if ( $hero_page && '' !== trim( $hero_page->post_content ) ) : ?>
+        <div class="hero__body">
+            <?php echo apply_filters( 'the_content', $hero_page->post_content ); ?>
+        </div>
+    <?php endif;
+endif;
+
 // ---- CTA ----
 if ( ! empty( $hero['cta_text'] ) && ! empty( $hero['cta_url'] ) ) : ?>
     <a href="<?php echo esc_url( $hero['cta_url'] ); ?>" class="hero__cta btn btn--white">

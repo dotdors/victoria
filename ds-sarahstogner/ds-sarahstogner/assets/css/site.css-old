@@ -1,0 +1,602 @@
+/**
+ * Sarah Stogner — Site-Specific Overrides
+ * Loads after dandysite-victoria/style.css
+ *
+ * Direction: "Ink & cream editorial" — legal-journal/longform-magazine
+ * feel for officeholder mode. Serif throughout, square corners,
+ * hairline borders, whitespace instead of shadows.
+ *
+ * Palette:
+ *   Ink Slate        #22303C   headlines, header text, dark sections
+ *   Oxblood          #9E3E33   links, buttons, rules — the working accent
+ *   Saddle Brown     #8A6A4F   metadata only (dates, sources, bylines)
+ *   Dusty Terracotta #E2A69B   accent ON dark surfaces (oxblood family,
+ *                              lightened for contrast — the cornflower
+ *                              lesson, solved up front)
+ *   Cream            #F7F4EE   surface
+ *   Warm White       #FFFDF9   background
+ */
+
+/* ============================================================
+   BRAND VARIABLE OVERRIDES
+   ============================================================ */
+
+:root {
+    /* Semantic colors */
+    --color-primary:     #22303C;   /* ink slate */
+    --color-secondary:   #44535F;   /* lighter slate */
+    --color-accent:      #9E3E33;   /* oxblood */
+    --color-text:        #2B2B28;   /* warm charcoal */
+    --color-text-light:  #6B6459;   /* warm gray */
+    --color-background:  #FFFDF9;   /* warm white */
+    --color-surface:     #F7F4EE;   /* cream */
+    --color-surface-alt: #EFE9DD;   /* deeper cream */
+    --color-border:      #DAD2C4;   /* stone */
+    --color-button-bg:   #9E3E33;
+    --color-button-text: #FFFDF9;
+
+    /* Site-local: metadata color (dates, sources, bylines) */
+    --color-metadata:    #8A6A4F;   /* saddle brown */
+
+    /* Dark-surface context — Victoria Surface Context system */
+    --color-dark-bg:            #22303C;
+    --color-on-dark-heading:    #FFFDF9;
+    --color-on-dark-text:       rgba(255, 253, 249, 0.85);
+    --color-on-dark-text-light: rgba(255, 253, 249, 0.7);
+    --color-on-dark-link:       #E2A69B;   /* dusty terracotta */
+    --color-on-dark-link-hover: #FFFDF9;
+    --color-on-dark-label:      #E2A69B;
+    --color-on-dark-border:     rgba(255, 253, 249, 0.18);
+
+    /* Typography — serif carries the whole site */
+    --font-primary:   'Source Serif 4', Georgia, 'Times New Roman', serif;
+    --font-secondary: 'Besley', Georgia, serif;
+
+    /* Editorial geometry — square corners, no shadows */
+    --border-radius: 2px;
+    --box-shadow: none;
+
+    /* Header — light editorial masthead with hairline rule */
+    --header-solid-bg:     #FFFDF9;
+    --header-solid-color:  #22303C;
+    --header-solid-border: #DAD2C4;
+
+    --header-revealed-solid-bg:    #FFFDF9;
+    --header-revealed-solid-color: #22303C;
+
+    /* Mobile menu panel — ink with cream text */
+    --header-mobile-menu-bg:     #22303C;
+    --header-mobile-menu-color:  #FFFDF9;
+    --header-mobile-menu-shadow: -4px 0 20px rgba(34, 48, 60, 0.35);
+}
+
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+
+/* Base scale — Victoria sizes components in rem, so scaling the html
+   root enlarges body text, headlines, buttons, and labels together. */
+html {
+    font-size: 19px;
+}
+
+h1, h2, h3, h4, h5, h6,
+.section-title,
+.hero__headline,
+.entry-title,
+.archive-title,
+.news-card__title {
+    font-family: var(--font-secondary);
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
+/* Victoria sets strong/b to weight 900 — too heavy in serif */
+strong, b {
+    font-weight: 700;
+}
+
+/* Section eyebrows — wide-tracked small caps, lighter weight */
+.section-label {
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    font-size: 0.72rem;
+}
+
+/* Hero headline — display serif, not the heavy campaign 800 */
+.hero__content .hero__headline {
+    font-weight: 600;
+    font-size: clamp(1.8rem, 4.5vw, 3rem);
+    line-height: 1.12;
+}
+
+/* ============================================================
+   HEADER — editorial masthead
+   ============================================================ */
+
+.site-header a,
+.site-header .site-title a {
+    color: var(--color-primary);
+}
+.site-header a:hover {
+    color: var(--color-accent);
+    text-decoration: none;
+}
+.site-header .site-title a {
+    font-family: var(--font-secondary);
+}
+.site-logo {
+    filter: none;
+    max-height: 20px;
+}
+
+/* ============================================================
+   BUTTONS — book-jacket style: square, small caps, restrained
+   ============================================================ */
+
+.btn,
+a.btn,
+.button,
+.wp-block-button__link,
+button[type="submit"],
+input[type="submit"] {
+    border-radius: 0;
+    font-family: var(--font-primary);
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.75em 1.8em;
+}
+
+/* Outline variant — 1px ink ghost button */
+.btn--outline {
+    background: transparent;
+    border: 1px solid var(--color-primary);
+    color: var(--color-primary);
+}
+.btn--outline:hover {
+    background: var(--color-primary);
+    color: var(--color-background);
+}
+
+/* White variants (used on dark/accent sections) — hairline editorial style.
+   Outline: visible 1px cream border normally, fills cream on hover.
+   Solid white: cream fill with ink text, inverts on hover. */
+.btn--outline-white,
+a.btn--outline-white {
+    border-width: 1px;
+    border-color: rgba(255, 253, 249, 0.85);
+    color: #FFFDF9;
+    background: transparent;
+}
+.btn--outline-white:hover,
+a.btn--outline-white:hover {
+    background: #FFFDF9;
+    border-color: #FFFDF9;
+    color: var(--color-primary);
+    transform: none;
+}
+.btn--white,
+a.btn--white {
+    background: #FFFDF9;
+    border: 1px solid #FFFDF9;
+    color: var(--color-primary);
+}
+.btn--white:hover,
+a.btn--white:hover {
+    background: transparent;
+    border-color: rgba(255, 253, 249, 0.85);
+    color: #FFFDF9;
+    transform: none;
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+
+.hero--fullbleed .hero__overlay {
+    background: linear-gradient(
+        to right,
+        rgba(34, 48, 60, 0.78) 35%,
+        rgba(34, 48, 60, 0.15) 100%
+    );
+}
+
+.hero__content {
+    text-align: left;
+    max-width: 600px;
+}
+
+/* Eyebrow — no colored box (that's Hawk's move); tracked small caps */
+.hero__eyebrow {
+    display: inline-block;
+    background: transparent;
+    color: #E2A69B;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    padding: 0 0 0.5em;
+    border-bottom: 1px solid rgba(255, 253, 249, 0.3);
+    margin-bottom: 1.1rem;
+}
+
+/* ============================================================
+   SPLIT HERO — boxed editorial feature
+   Contained to the content column and centered, framed with a
+   hairline border: a magazine feature spread, not a billboard.
+   ============================================================ */
+
+.hero--split {
+    max-width: var(--container-max-width);
+    margin: 2rem auto;
+    border: 1px solid var(--color-border);
+    overflow: visible;      /* let the full-bleed treatments escape the box */
+    position: relative;
+    isolation: isolate;     /* keep the negative-z pseudos inside the hero's stacking context */
+}
+
+/* ---- Full-bleed masthead rule ----
+   Anchored to the upper third so it underlines the headline zone
+   rather than bisecting the portrait. Runs edge-to-edge behind
+   the box via the 100vw escape trick. */
+.hero--split::before {
+    content: '';
+    position: absolute;
+    top: 32%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    height: 2px;
+    background: var(--color-accent);
+    z-index: -1;
+}
+
+/* ---- Tonal shift below the rule ----
+   Deep cream fading back to the page color: the rule becomes a
+   horizon line the boxed portrait stands in front of.
+   For a SOLID band instead, replace the gradient with:
+       background: var(--color-surface-alt);
+   and add: bottom: 0 → keeps the band flush with the box bottom. */
+.hero--split::after {
+    content: '';
+    position: absolute;
+    top: calc(32% + 2px);
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    background: linear-gradient(
+        to bottom,
+        var(--color-surface-alt) 0%,
+        rgba(239, 233, 221, 0) 85%
+    );
+    z-index: -2;
+}
+
+.hero--split .hero__panel {
+    background: var(--color-surface);
+}
+
+/* Panel is cream — remap the overlay-oriented text styles */
+.hero--split .hero__eyebrow {
+    color: var(--color-accent);
+    border-bottom-color: var(--color-border);
+}
+.hero--split .hero__headline {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+.hero--split .hero__tagline {
+    color: var(--color-text-light);
+    font-style: italic;
+}
+.hero--split .hero__body {
+    color: var(--color-text);
+    font-size: 1rem;
+}
+
+/* Hero CTA is hardcoded btn--white — invisible on the cream panel,
+   so restyle it as the standard oxblood button here */
+.hero--split .hero__cta.btn--white,
+.hero--split a.hero__cta.btn--white {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-button-text);
+}
+.hero--split .hero__cta.btn--white:hover,
+.hero--split a.hero__cta.btn--white:hover {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-background);
+}
+
+@media (max-width: 900px) {
+    /* Boxed frame meets the viewport edge too soon on small screens */
+    .hero--split {
+        margin: 1rem var(--spacing-md, 1rem);
+        max-width: none;
+    }
+    /* Box spans nearly edge-to-edge here — the treatments lose meaning */
+    .hero--split::before,
+    .hero--split::after {
+        display: none;
+    }
+}
+
+/* Guard against the 100vw pseudo-elements creating a horizontal scrollbar */
+body {
+    overflow-x: clip;
+}
+
+/* ============================================================
+   CARDS — hairline borders, no shadows, no lift
+   ============================================================ */
+
+.news-card {
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 0;
+    box-shadow: none;
+}
+.news-card:hover {
+    box-shadow: none;
+    transform: none;
+    border-color: var(--color-accent);
+}
+
+/* Metadata in saddle brown, not accent red */
+.news-card__source {
+    color: var(--color-metadata);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+}
+.news-card__date {
+    color: var(--color-metadata);
+    font-style: italic;
+}
+
+/* Publication logo cards — hairline separator instead of a color bar */
+#news .news-card__thumbnail--contain {
+    border-bottom: 1px solid var(--color-border);
+}
+
+/* Card thumbnails are logos across this site — shallow banner ratio
+   everywhere (In the Media, homepage, anywhere news-cards render) */
+.news-card__thumbnail {
+    aspect-ratio: 16 / 5;
+}
+
+/* ============================================================
+   WRITING & COMMENTARY CARDS — text-first editorial
+   Internal posts: no image area at all (no placeholders).
+   External op-eds with a featured image: contained publication
+   logo with padding, hairline separator, and a ↗ title marker.
+   ============================================================ */
+
+.section-articles .news-card__thumbnail {
+    display: none;
+}
+.section-articles .news-card--external .news-card__thumbnail:has(img) {
+    display: block;
+    padding: 1rem;
+    background: var(--color-background);
+    border-bottom: 1px solid var(--color-border);
+}
+.section-articles .news-card--external .news-card__thumbnail img {
+    object-fit: contain;
+    object-position: center;
+}
+.section-articles .news-card--external .news-card__title a::after {
+    content: ' \2197';
+    font-size: 0.75em;
+    color: var(--color-metadata);
+}
+
+/* Blog and archive pages — text-only cards, no images ever */
+.archive-container .news-card__thumbnail {
+    display: none;
+}
+
+/* ============================================================
+   ENDORSEMENTS → "PRAISE" — open editorial pull-quotes
+   ============================================================ */
+
+.section-endorsements .endorsement-card {
+    background: transparent;
+    border: none;
+    border-top: 1px solid var(--color-border);
+    border-radius: 0;
+    box-shadow: none;
+    padding: 1.75rem 0.5rem 1.5rem 0;
+}
+
+.section-endorsements .endorsement-card__quote {
+    font-family: var(--font-secondary);
+    font-style: italic;
+    font-size: 1.08rem;
+    line-height: 1.6;
+    color: var(--color-text);
+}
+
+.section-endorsements .endorsement-card__name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+}
+.section-endorsements .endorsement-card__name a {
+    color: var(--color-primary);
+}
+.section-endorsements .endorsement-card__name a:hover {
+    color: var(--color-accent);
+}
+.section-endorsements .endorsement-card__title-org {
+    font-size: 0.82rem;
+    color: var(--color-metadata);
+    font-style: italic;
+}
+
+/* ============================================================
+   SOCIAL ICONS — scaled down for editorial restraint
+   (the [ds_socials] shortcode sets size inline, hence !important)
+   ============================================================ */
+
+.ds-socials__icon {
+    width: 22px !important;
+    height: 22px !important;
+}
+.section-connect__socials .ds-socials {
+    gap: 1rem;
+}
+
+/* ============================================================
+   PULLQUOTES & BLOCKQUOTES — elevated editorial panel
+   Cream panel, oxblood rule, hanging ghost quote mark,
+   small-caps citation in saddle brown.
+   ============================================================ */
+
+.section-bio__pullquote,
+.entry-content blockquote,
+blockquote {
+    position: relative;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-accent);
+    border-radius: 0;
+    margin: 2rem 0;
+    padding: 1.75rem 2rem 1.5rem 2.25rem;
+    font-family: var(--font-secondary);
+    font-style: italic;
+    font-size: 1.12rem;
+    line-height: 1.65;
+    color: var(--color-primary);
+}
+
+/* Hanging decorative quote mark */
+.entry-content blockquote::before,
+.section-bio__pullquote::before {
+    content: '\201C';
+    position: absolute;
+    top: -0.15em;
+    left: 0.35rem;
+    font-family: var(--font-secondary);
+    font-size: 4.5rem;
+    font-style: normal;
+    line-height: 1;
+    color: var(--color-accent);
+    opacity: 0.22;
+    pointer-events: none;
+}
+
+blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+/* Citation — small caps in saddle brown */
+blockquote cite,
+blockquote footer {
+    display: block;
+    margin-top: 0.9rem;
+    font-family: var(--font-primary);
+    font-style: normal;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-metadata);
+}
+blockquote cite::before,
+blockquote footer::before {
+    content: '\2014\00A0';   /* em dash before the attribution */
+    color: var(--color-accent);
+}
+
+/* On dark sections, go translucent instead of cream */
+.section--dark blockquote,
+.section--dark .section-bio__pullquote {
+    background: rgba(255, 253, 249, 0.06);
+    border-color: var(--color-on-dark-border);
+    border-left-color: var(--color-on-dark-link);
+    color: var(--color-on-dark-text);
+}
+
+/* ============================================================
+   PAGINATION — hairline, square
+   ============================================================ */
+
+.page-numbers {
+    padding: 0.4em 0.9em;
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    background: transparent;
+    border-radius: 0;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: border-color 0.2s ease, color 0.2s ease;
+}
+.page-numbers:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    background: transparent;
+    text-decoration: none;
+}
+.page-numbers.current {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    background: transparent;
+    font-weight: 700;
+}
+.page-numbers.next,
+.page-numbers.prev {
+    border-color: transparent;
+    color: var(--color-text-light);
+}
+.page-numbers.next:hover,
+.page-numbers.prev:hover {
+    color: var(--color-accent);
+    border-color: transparent;
+    background: transparent;
+}
+
+/* ============================================================
+   SINGLE POST — reading experience first
+   ============================================================ */
+
+.entry-content {
+    font-size: 1.08rem;
+    line-height: 1.8;
+}
+
+/* Post metadata in saddle brown italics */
+.entry-meta,
+.entry-meta a {
+    color: var(--color-metadata);
+    font-style: italic;
+}
+
+/* Publication bar links — quiet hairline text buttons */
+.article-publication-bar .btn {
+    background: transparent;
+    color: var(--color-text-light);
+    border: 1px solid var(--color-border);
+    font-size: 0.75rem;
+    padding: 0.4em 1em;
+    letter-spacing: 0.08em;
+}
+.article-publication-bar .btn:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+    background: transparent;
+    transform: none;
+}
+
+/* ============================================================
+   FOOTER — ink block
+   ============================================================ */
+
+.site-footer {
+    background: var(--color-primary);
+}

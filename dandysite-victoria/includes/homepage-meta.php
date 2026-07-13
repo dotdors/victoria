@@ -234,6 +234,7 @@ function dsp_get_hero_meta( $post_id = null ) {
     }
 
     return [
+        'post_id'    => $post_id,
         'eyebrow'    => get_post_meta( $post_id, 'dsp_hero_eyebrow', true ),
         'headline'   => get_post_meta( $post_id, 'dsp_hero_headline', true ),
         'tagline'    => get_post_meta( $post_id, 'dsp_hero_tagline', true ),

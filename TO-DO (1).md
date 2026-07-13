@@ -23,11 +23,6 @@
 - [x] **Surface Context system** — dark/light/surface per-section backgrounds; `--color-on-dark-*` token set + `--ctx-*` consumption pattern; Background dropdown in Homepage Settings (the "cornflower lesson" fix)
 - [x] ds-sarahstogner plugin scaffolded — ink & cream editorial direction (Besley + Source Serif 4, oxblood accent)
 - [x] CTA section content (heading/text/buttons) editable in Homepage Settings; site plugins seed defaults on activation
-- [x] `[ds_section]` shortcode — embed any homepage section on regular pages, with optional per-embed background override
-- [x] Hero body content — front-page block content renders in the hero under headline/tagline (`.hero__body`)
-- [x] ds-sarahstogner: boxed editorial split hero (container-width, centered, hairline frame, cream panel)
-- [x] Hero section can now be hidden like any other section (header auto-solid on homepage when hidden)
-- [x] ds-sarahstogner: text-first Writing & Commentary cards (no image area on internal posts; contained publication logos on external op-eds)
 - [x] **Media kit download** — upload in Homepage Settings → Get Involved / CTA; link renders at the bottom of the CTA section
 - [x] Fixed `.btn--white` / `.btn--outline-white` never applying (a.btn base rule outranked the variants — affects Hawk's CTA buttons too, for the better)
 

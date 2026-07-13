@@ -153,7 +153,7 @@ function dsp_socials_shortcode( $atts ) {
         if ( ! $svg ) {
             $inner = '<span class="ds-socials__label">' . esc_html( $tooltip ) . '</span>';
         } else {
-            $inner = '<span class="ds-socials__icon" style="width:' . $size . 'px;height:' . $size . 'px;" aria-hidden="true">'
+            $inner = '<span class="ds-socials__icon" aria-hidden="true">'
                 . $svg
                 . '</span>'
                 . '<span class="screen-reader-text">' . esc_html( $platform['aria'] ) . '</span>';
@@ -172,7 +172,9 @@ function dsp_socials_shortcode( $atts ) {
         return '';
     }
 
-    return '<div class="ds-socials">' . implode( '', $items ) . '</div>';
+    // Icon size flows through a CSS custom property so site plugins can
+    // override it with plain CSS (no inline-style fights, no !important).
+    return '<div class="ds-socials" style="--ds-socials-size:' . $size . 'px;">' . implode( '', $items ) . '</div>';
 }
 add_shortcode( 'ds_socials', 'dsp_socials_shortcode' );
 

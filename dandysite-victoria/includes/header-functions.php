@@ -23,6 +23,13 @@ if (!defined('ABSPATH')) {
 function dsp_get_header_style() {
     $default = get_option('dsp_header_default_style', 'solid');
 
+    // Hero hidden on the homepage → nothing to overlay; force solid.
+    // Overrides per-page meta, since an overlay header would sit on
+    // top of the first content section.
+    if ( is_front_page() && '1' !== get_option( 'dsp_hp_show_hero', '1' ) ) {
+        return 'solid';
+    }
+
     // Per-page/CPT override via meta field (set in the Header Style sidebar panel)
     if (is_singular()) {
         $post_id = get_queried_object_id();

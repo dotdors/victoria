@@ -32,8 +32,11 @@ $template_map = [
 $assigned = get_page_template_slug( get_option( 'page_on_front' ) );
 $layout   = $template_map[ $assigned ] ?? 'fullbleed';
 
-// Build section list from Homepage Settings — hero always on
-$sections = [ 'hero' ];
+// Build section list from Homepage Settings
+$sections = [];
+if ( '1' === get_option( 'dsp_hp_show_hero', '1' ) ) {
+    $sections[] = 'hero';
+}
 
 if ( get_option( 'dsp_hp_show_bio',          '1' ) === '1' ) $sections[] = 'bio';
 if ( get_option( 'dsp_hp_show_issues',        '1' ) === '1' ) $sections[] = 'issues';
