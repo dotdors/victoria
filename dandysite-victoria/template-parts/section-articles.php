@@ -26,7 +26,7 @@ if ( empty( $selected_cats ) ) {
 
 if ( empty( $selected_cats ) ) return;
 
-$articles_query = new WP_Query( [
+$articles_query = dsp_sticky_first_query( [
     'post_type'      => 'post',
     'post_status'    => 'publish',
     'posts_per_page' => $post_count,
@@ -42,9 +42,13 @@ $articles_query = new WP_Query( [
 
 if ( ! $articles_query->have_posts() ) return;
 
-// View all URL — blog page, falling back to /blog/
-$blog_page_id = get_option( 'page_for_posts' );
-$view_all_url = $blog_page_id ? get_permalink( $blog_page_id ) : home_url( '/blog/' );
+// View all URL — Homepage Settings value wins; default is the blog page,
+// falling back to /blog/. Filter runs last for programmatic overrides.
+$view_all_url = trim( (string) get_option( 'dsp_hp_articles_view_all_url', '' ) );
+if ( '' === $view_all_url ) {
+    $blog_page_id = get_option( 'page_for_posts' );
+    $view_all_url = $blog_page_id ? get_permalink( $blog_page_id ) : home_url( '/blog/' );
+}
 $view_all_url = apply_filters( 'dsp_articles_view_all_url', $view_all_url );
 ?>
 
@@ -97,6 +101,8 @@ $view_all_url = apply_filters( 'dsp_articles_view_all_url', $view_all_url );
                             <?php the_title(); ?>
                         </a>
                     </h3>
+
+                    <?php dsp_card_blurb(); ?>
 
                     <?php if ( apply_filters( 'dsp_show_post_date', true, get_the_ID() ) ) : ?>
                     <div class="news-card__date">

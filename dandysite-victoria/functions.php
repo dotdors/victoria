@@ -465,6 +465,75 @@ require_once DSP_THEME_DIR . '/includes/header-meta.php';
 require_once DSP_THEME_DIR . '/includes/footer-settings.php';
 require_once DSP_THEME_DIR . '/includes/social-settings.php';
 require_once DSP_THEME_DIR . '/includes/section-embed.php';
+require_once DSP_THEME_DIR . '/includes/import-external.php';
+require_once DSP_THEME_DIR . '/includes/admin-columns.php';
+
+// =====================================================================
+// QUERY HELPERS
+// =====================================================================
+
+/**
+ * News section category slugs (shared by the homepage section and the
+ * Media Archive page template).
+ */
+function dsp_get_news_categories() {
+    $cats = get_option( 'dsp_hp_news_cats', [ 'in-the-news' ] );
+    $cats = array_filter( (array) $cats );
+    return $cats ?: [ 'in-the-news' ];
+}
+
+/**
+ * WP_Query wrapper that floats sticky posts to the front.
+ *
+ * Custom (secondary) WP_Query ignores stickies entirely, so homepage
+ * sections built on it never honored "Stick to the top of the blog".
+ * This runs the same args against the sticky set first, fills the rest
+ * chronologically, and returns a query in that combined order. Sticky
+ * posts outside the requested categories are NOT pulled in — args
+ * always win.
+ */
+function dsp_sticky_first_query( $args ) {
+    $per_page   = isset( $args['posts_per_page'] ) ? (int) $args['posts_per_page'] : (int) get_option( 'posts_per_page' );
+    $sticky_ids = array_map( 'intval', (array) get_option( 'sticky_posts', [] ) );
+
+    if ( ! $sticky_ids || $per_page < 1 ) {
+        return new WP_Query( $args );
+    }
+
+    // Stickies that match the section's own criteria
+    $sticky_q = new WP_Query( array_merge( $args, [
+        'post__in'            => $sticky_ids,
+        'posts_per_page'      => $per_page,
+        'ignore_sticky_posts' => 1,
+    ] ) );
+    $sticky_found = wp_list_pluck( $sticky_q->posts, 'ID' );
+
+    if ( ! $sticky_found ) {
+        return new WP_Query( $args );
+    }
+
+    // Fill the remaining slots, excluding the stickies already placed
+    $remaining = max( 0, $per_page - count( $sticky_found ) );
+    $rest_ids  = [];
+    if ( $remaining > 0 ) {
+        $rest_q = new WP_Query( array_merge( $args, [
+            'post__not_in'        => $sticky_found,
+            'posts_per_page'      => $remaining,
+            'ignore_sticky_posts' => 1,
+        ] ) );
+        $rest_ids = wp_list_pluck( $rest_q->posts, 'ID' );
+    }
+
+    $ids = array_merge( $sticky_found, $rest_ids );
+    return new WP_Query( [
+        'post_type'           => $args['post_type'] ?? 'post',
+        'post_status'         => $args['post_status'] ?? 'publish',
+        'post__in'            => $ids,
+        'orderby'             => 'post__in',
+        'posts_per_page'      => count( $ids ),
+        'ignore_sticky_posts' => 1,
+    ] );
+}
 
 // ===== SITE IDENTITY (logo variants) =====
 require_once DSP_THEME_DIR . '/includes/site-identity.php';

@@ -69,6 +69,8 @@ get_header(); ?>
                         </a>
                     </h3>
 
+                    <?php dsp_card_blurb(); ?>
+
                     <?php if ( $show_date ) : ?>
                     <div class="news-card__date"><?php echo esc_html( get_the_date() ); ?></div>
                     <?php endif; ?>

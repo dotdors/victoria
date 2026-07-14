@@ -161,6 +161,8 @@ Context classes define the `--ctx-*` set — `.section--dark` maps them to the `
 
 **The rule for site plugins:** never re-style dark sections component-by-component. Override the `--color-on-dark-*` set once in `:root` and every dark surface — current and future — follows. This exists because brand accents are frequently unreadable on dark backgrounds (Hawk's red-on-navy needed a cornflower substitute); `--color-on-dark-link` forces that decision up front. The `SURFACE CONTEXTS` block must remain at the **end** of the section styles in `style.css` so context classes win the cascade over per-section defaults.
 
+White button variants (`btn--white`, `btn--outline-white`) are automatically remapped to the standard button styles inside `.section--light` / `.section--surface`, so switching a branded section to a light background never produces invisible buttons.
+
 Ctx tokens available inside any section: `--ctx-heading`, `--ctx-text`, `--ctx-text-light`, `--ctx-link`, `--ctx-link-hover`, `--ctx-label`, `--ctx-border`.
 
 ---
@@ -216,6 +218,36 @@ dsp_get_positions( $homepage_only = false )
 ---
 
 ## Homepage System
+
+### Articles View All URL
+
+The Articles / Op-Eds section's View All button destination is editable in **Homepage Settings → Articles / Op-Eds** (`dsp_hp_articles_view_all_url`; accepts a full URL or a path like `/newsletter/`). Blank = default (the Posts page, or `/blog/`). The `dsp_articles_view_all_url` filter still runs last.
+
+### Sticky Posts in Homepage Sections
+
+`dsp_sticky_first_query( $args )` wraps WP_Query and floats sticky posts ("Stick to the top of the blog" — Quick Edit or the Status panel) to the front of a section, filling remaining slots chronologically. Stickies outside the section's categories are not pulled in. Used by the news and articles sections. The Media Archive stays chronological.
+
+### News Card Layout Filters & Media Archive
+
+The news card is a shared partial (`template-parts/card-news.php`) used by the homepage section and the **Media Archive** page template (`page-templates/page-media-archive.php`). The archive runs the same category settings (`dsp_get_news_categories()`) with pagination; create a page with that template and the section's View All button links to it automatically (beats the category-archive fallback).
+
+Card layout filters (site plugin):
+- `dsp_news_card_category_eyebrow` (default false) — primary category becomes the eyebrow; publication moves into a `.news-card__meta` line beside the date
+- `dsp_news_card_date_format` ('' = site default) — e.g. `'m.d.Y'`
+
+The logo (`--contain`) thumbnail treatment now applies to all cards in news contexts — the old `in_category('in-the-news')` check silently failed for any site using different news categories.
+
+### Posts List Admin Columns
+
+`includes/admin-columns.php` customizes the Posts list (post type `post` only): removes Author and Tags, adds Image (✓ when a featured image is set), Publication (`dsp_publication_name`), and Blurb (✓ when a manual excerpt exists).
+
+### External Posts CSV Importer
+
+**Tools → Import External Posts** bulk-creates posts for external coverage/op-eds. CSV or tab-separated with a header row (case-insensitive, any order): Title (required), Publication (→ `dsp_publication_name`), URL (→ `dsp_external_url`), Date (any strtotime format → post date), Category (created by name if missing), Blurb (optional → excerpt/card blurb). Duplicates are skipped by matching external URL (or title when no URL). A "Preview only" mode (checked by default) reports what would happen without creating anything. Posts are created published with empty content; the external URL meta drives card behavior per the site's External Article Behavior setting.
+
+### Card Blurbs (post excerpt)
+
+News cards show a short blurb under the title when the post has a **manual excerpt** (`has_excerpt()` — auto-generated excerpts never render on cards). The excerpt is surfaced as a "Card Blurb" textarea in the Article Details meta box for discoverability; it writes to `post_excerpt` via `wp_insert_post_data` with a changed-vs-loaded guard so edits made in the editor's native Excerpt panel aren't clobbered. Output via `dsp_card_blurb()` (news + articles sections and archives), styled by `.news-card__blurb` (ctx-aware, clamped to 3 lines). Kill switch: `add_filter( 'dsp_show_card_blurb', '__return_false' );` — the filter also receives the post ID for per-post logic.
 
 ### Embedding Homepage Sections — [ds_section]
 

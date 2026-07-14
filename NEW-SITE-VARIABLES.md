@@ -32,6 +32,37 @@ These have opinionated Victoria defaults that will look wrong on any real site.
 
 ---
 
+## Must Set — Dark-Surface Context
+
+**Do not skip these.** Brand accents are frequently unreadable on dark backgrounds
+(the Hawk cornflower lesson: red links on navy failed and had to be replaced after
+the fact). This set is consumed by every dark section — Issues, Get Involved, and
+any section switched to "Dark" in Homepage Settings — via the Surface Context
+system. Choose the on-dark accent deliberately: usually the brand accent's family,
+lightened until it passes contrast on your dark background.
+
+```css
+:root {
+    /* Background of dark sections (default: var(--color-primary)) */
+    --color-dark-bg:            #1d3557;
+
+    /* Text on dark surfaces */
+    --color-on-dark-heading:    #ffffff;
+    --color-on-dark-text:       rgba(255,255,255,0.85);
+    --color-on-dark-text-light: rgba(255,255,255,0.75);
+
+    /* Accent ON dark — links, labels. NOT necessarily the brand accent! */
+    --color-on-dark-link:       #aecbff;
+    --color-on-dark-link-hover: #ffffff;
+    --color-on-dark-label:      #aecbff;
+
+    /* Hairlines/dividers on dark */
+    --color-on-dark-border:     rgba(255,255,255,0.18);
+}
+```
+
+---
+
 ## Must Set — Header
 
 Victoria's header defaults to near-black (`#1a1a1a`). Almost every political site

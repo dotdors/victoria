@@ -15,6 +15,9 @@
  * SVG icons: themes/dandysite-victoria/assets/images/
  *   icon-instagram.svg
  *   icon-facebook.svg
+ *   icon-x.svg
+ *   icon-tiktok.svg
+ *   icon-linkedin.svg
  *
  * Usage:
  *   [ds_socials]                  — all saved platforms
@@ -54,6 +57,18 @@ function dsp_social_platforms() {
             'icon'       => 'icon-x.svg',
             'aria'       => 'Find us on X',
             'network'    => 'X',
+        ],
+        'dsp_social_tiktok' => [
+            'label'      => __( 'TikTok URL', 'dandysite-victoria' ),
+            'icon'       => 'icon-tiktok.svg',
+            'aria'       => 'Find us on TikTok',
+            'network'    => 'TikTok',
+        ],
+        'dsp_social_linkedin' => [
+            'label'      => __( 'LinkedIn URL', 'dandysite-victoria' ),
+            'icon'       => 'icon-linkedin.svg',
+            'aria'       => 'Find us on LinkedIn',
+            'network'    => 'LinkedIn',
         ],
     ];
 }

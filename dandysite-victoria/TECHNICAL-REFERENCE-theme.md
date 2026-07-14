@@ -161,6 +161,8 @@ Context classes define the `--ctx-*` set — `.section--dark` maps them to the `
 
 **The rule for site plugins:** never re-style dark sections component-by-component. Override the `--color-on-dark-*` set once in `:root` and every dark surface — current and future — follows. This exists because brand accents are frequently unreadable on dark backgrounds (Hawk's red-on-navy needed a cornflower substitute); `--color-on-dark-link` forces that decision up front. The `SURFACE CONTEXTS` block must remain at the **end** of the section styles in `style.css` so context classes win the cascade over per-section defaults.
 
+White button variants (`btn--white`, `btn--outline-white`) are automatically remapped to the standard button styles inside `.section--light` / `.section--surface`, so switching a branded section to a light background never produces invisible buttons.
+
 Ctx tokens available inside any section: `--ctx-heading`, `--ctx-text`, `--ctx-text-light`, `--ctx-link`, `--ctx-link-hover`, `--ctx-label`, `--ctx-border`.
 
 ---
@@ -216,6 +218,25 @@ dsp_get_positions( $homepage_only = false )
 ---
 
 ## Homepage System
+
+### Embedding Homepage Sections — [ds_section]
+
+Any homepage section can be rendered on a regular page or post with the `[ds_section]` shortcode (via a Shortcode block):
+
+```
+[ds_section name="news"]
+[ds_section name="get-involved" bg="dark"]
+```
+
+Valid names: `bio`, `issues`, `articles`, `news`, `endorsements`, `get-involved`, `connect`. The optional `bg` attribute (`default` / `light` / `surface` / `dark`) overrides the Homepage Settings background for that render only. Embeds ignore the homepage show/hide checkboxes — a section hidden on the homepage can still be embedded elsewhere. Output is wrapped in `.ds-embedded-section`, which breaks out of the page content column to run full width. Sections keep their homepage element IDs, so avoid embedding the same section twice on one page. Unknown names print an inline hint to logged-in editors and nothing to visitors.
+
+### Hero Body Content
+
+On the **front page only**, if the page has block content, the hero renders it in a `.hero__body` div under the headline/tagline and above the CTA. This lets sites put real, block-edited text in the hero without a new meta field. It is deliberately scoped to `is_front_page()` — the standalone hero page templates already output `the_content()` below the hero. `dsp_get_hero_meta()` now includes `post_id` in its return array.
+
+### Hero Show/Hide
+
+The hero can be hidden like any other section (`dsp_hp_show_hero`, Homepage Settings → Hero). When hidden on the homepage, `dsp_get_header_style()` forces the solid header style regardless of the default setting or per-page meta, since an overlay header would sit on top of the first content section.
 
 ### Get Involved / CTA Settings & Media Kit
 

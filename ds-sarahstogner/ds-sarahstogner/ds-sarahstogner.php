@@ -87,9 +87,14 @@ add_action('after_setup_theme', 'dsss_editor_color_palette', 20); // priority 20
 // Victoria's defaults are campaign-flavored. Repurpose the sections
 // for writing/commentary + speaking engagements.
 
-add_filter( 'dsp_articles_title',        fn() => __( 'Writing & Commentary', 'ds-sarahstogner' ) );
-add_filter( 'dsp_articles_view_all',     fn() => __( 'All Writing', 'ds-sarahstogner' ) );
+add_filter( 'dsp_articles_title',        fn() => __( 'Newsletter', 'ds-sarahstogner' ) );
+add_filter( 'dsp_articles_view_all',     fn() => __( 'Newsletter Archive', 'ds-sarahstogner' ) );
 add_filter( 'dsp_news_title',            fn() => __( 'In the Media', 'ds-sarahstogner' ) );
+
+// In the Media cards: category (Coverage / Op-Ed) as the eyebrow,
+// publication moved beside a compact date
+add_filter( 'dsp_news_card_category_eyebrow', '__return_true' );
+add_filter( 'dsp_news_card_date_format', fn() => 'm.d.Y' );
 add_filter( 'dsp_endorsements_title',    fn() => __( 'Praise', 'ds-sarahstogner' ) );
 add_filter( 'dsp_endorsements_subtitle', fn() => '' );
 

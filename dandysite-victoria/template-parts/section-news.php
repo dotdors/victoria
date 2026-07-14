@@ -2,14 +2,16 @@
 /**
  * Template Part: In the News Section
  *
- * Displays recent posts. Respects the dsp_external_link_behavior option:
- *   'direct'  — card click goes straight to external URL (new tab)
- *   'summary' — card goes to on-site post; post has "Read at [Publication]" button (default)
+ * Displays recent posts from the configured news categories. Sticky
+ * posts within those categories float to the front (dsp_sticky_first_query).
  *
- * External article fields (set via Article Details meta box):
- *   dsp_publication_name   — source label shown on card
- *   dsp_external_url       — link to original
- *   dsp_pdf_attachment_id  — downloadable PDF (shown on single post, not card)
+ * Card rendering is shared with the Media Archive page template — see
+ * template-parts/card-news.php. Card layout filters:
+ *   dsp_news_card_category_eyebrow (bool, default false)
+ *   dsp_news_card_date_format      (string, '' = site default)
+ *
+ * View All link resolution: a published page using the Media Archive
+ * template wins; otherwise the first configured category's archive.
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -19,20 +21,29 @@ $section_title  = apply_filters( 'dsp_news_title',       __( 'In the News', 'dan
 $view_all_text  = apply_filters( 'dsp_news_view_all',    __( 'View All', 'dandysite-victoria' ) );
 $link_behavior  = get_option( 'dsp_external_link_behavior', 'summary' );
 
-// Get selected categories; default to in-the-news only
-$news_cats = get_option( 'dsp_hp_news_cats', [ 'in-the-news' ] );
-if ( empty( $news_cats ) ) {
-    $news_cats = [ 'in-the-news' ];
-}
+$card_category_eyebrow = (bool) apply_filters( 'dsp_news_card_category_eyebrow', false );
+$card_date_format      = apply_filters( 'dsp_news_card_date_format', '' );
 
+$news_cats = dsp_get_news_categories();
+
+// View all: Media Archive page (if one exists) > first category archive
 $view_all_url = '';
-$first_term = get_term_by( 'slug', $news_cats[0], 'category' );
-if ( $first_term ) {
-    $view_all_url = get_term_link( $first_term );
+$archive_page = get_pages( [
+    'meta_key'   => '_wp_page_template',
+    'meta_value' => 'page-templates/page-media-archive.php',
+    'number'     => 1,
+] );
+if ( $archive_page ) {
+    $view_all_url = get_permalink( $archive_page[0] );
+} else {
+    $first_term = get_term_by( 'slug', $news_cats[0], 'category' );
+    if ( $first_term ) {
+        $view_all_url = get_term_link( $first_term );
+    }
 }
 $view_all_url = apply_filters( 'dsp_news_view_all_url', $view_all_url ?: home_url( '/in-the-news/' ) );
 
-$news_query = new WP_Query( [
+$news_query = dsp_sticky_first_query( [
     'post_type'      => 'post',
     'post_status'    => 'publish',
     'posts_per_page' => $post_count,
@@ -56,65 +67,13 @@ if ( ! $news_query->have_posts() ) return;
 
         <div class="news-grid">
             <?php while ( $news_query->have_posts() ) : $news_query->the_post();
-                $publication = get_post_meta( get_the_ID(), 'dsp_publication_name', true );
-                $ext_url     = get_post_meta( get_the_ID(), 'dsp_external_url', true );
-
-                // Determine card href and target based on behavior setting
-                if ( $ext_url && $link_behavior === 'direct' ) {
-                    $card_url    = $ext_url;
-                    $card_target = ' target="_blank" rel="noopener noreferrer"';
-                } else {
-                    $card_url    = get_the_permalink();
-                    $card_target = '';
-                }
-                $thumb_class = in_category( 'in-the-news' )
-                    ? 'news-card__thumbnail news-card__thumbnail--contain'
-                    : 'news-card__thumbnail';
-            ?>
-            <article class="news-card<?php echo $ext_url ? ' news-card--external' : ''; ?>">
-
-                <div class="<?php echo esc_attr( $thumb_class ); ?>">
-                    <?php if ( has_post_thumbnail() ) : ?>
-                        <a href="<?php echo esc_url( $card_url ); ?>"<?php echo $card_target; ?>>
-                            <?php the_post_thumbnail( 'medium', [ 'loading' => 'lazy' ] ); ?>
-                        </a>
-                    <?php else : ?>
-                        <div class="news-card__thumbnail-placeholder">
-                            <span aria-hidden="true">&#9650;</span>
-                        </div>
-                    <?php endif; ?>
-                </div>
-
-                <div class="news-card__body">
-
-                    <?php if ( $publication ) : ?>
-                    <div class="news-card__source"><?php echo esc_html( $publication ); ?></div>
-                    <?php endif; ?>
-
-                    <h3 class="news-card__title">
-                        <a href="<?php echo esc_url( $card_url ); ?>"<?php echo $card_target; ?>>
-                            <?php the_title(); ?>
-                        </a>
-                    </h3>
-
-                    <?php if ( apply_filters( 'dsp_show_post_date', true, get_the_ID() ) ) : ?>
-                    <div class="news-card__date">
-                        <?php echo esc_html( get_the_date() ); ?>
-                    </div>
-                    <?php endif; ?>
-
-                    <a href="<?php echo esc_url( $card_url ); ?>"<?php echo $card_target; ?>
-                       class="btn" style="font-size:0.8rem; padding:0.5em 1.2em;">
-                        <?php echo $ext_url && $link_behavior === 'direct'
-                            ? esc_html__( 'Read Article', 'dandysite-victoria' )
-                            : esc_html__( 'Read More', 'dandysite-victoria' );
-                        ?>
-                    </a>
-
-                </div>
-
-            </article>
-            <?php endwhile; wp_reset_postdata(); ?>
+                get_template_part( 'template-parts/card-news', null, [
+                    'link_behavior'    => $link_behavior,
+                    'contain'          => true, // every post here matched the news categories — always logo treatment
+                    'category_eyebrow' => $card_category_eyebrow,
+                    'date_format'      => $card_date_format,
+                ] );
+            endwhile; wp_reset_postdata(); ?>
         </div>
 
         <?php if ( $view_all_url ) : ?>

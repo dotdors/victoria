@@ -23,6 +23,17 @@
 - [x] **Surface Context system** — dark/light/surface per-section backgrounds; `--color-on-dark-*` token set + `--ctx-*` consumption pattern; Background dropdown in Homepage Settings (the "cornflower lesson" fix)
 - [x] ds-sarahstogner plugin scaffolded — ink & cream editorial direction (Besley + Source Serif 4, oxblood accent)
 - [x] CTA section content (heading/text/buttons) editable in Homepage Settings; site plugins seed defaults on activation
+- [x] Fixed social icon sizing (icon span was inline so the shortcode size never applied; SVGs rendered at their raw 800px attributes)
+- [x] Articles View All destination editable in Homepage Settings
+- [x] Sticky posts float first in news + articles sections (`dsp_sticky_first_query`)
+- [x] Media Archive page template — paginated, same query/cards as homepage news section, auto-linked from View All
+- [x] News card: category-eyebrow mode + date-format filter (Sarah: Coverage/Op-Ed eyebrow, publication + m.d.Y meta line)
+- [x] Fixed logo containment — `--contain` was gated on the hardcoded in-the-news category
+- [x] Posts list admin columns: Author/Tags removed; Image ✓, Publication, Blurb ✓ added
+- [x] External Posts CSV importer (Tools menu) — Title/Publication/URL/Date/Category/Blurb columns, dedupe by URL, preview mode
+- [x] TikTok + LinkedIn added to social platforms
+- [x] Sarah sections renamed: Newsletter (own writing) + In the Media split into Coverage / Op-Ed categories; Hawk news section → In the Media
+- [x] Card blurbs — manual excerpt renders under card titles (surfaced as "Card Blurb" in Article Details; `dsp_show_card_blurb` kill switch)
 - [x] `[ds_section]` shortcode — embed any homepage section on regular pages, with optional per-embed background override
 - [x] Hero body content — front-page block content renders in the hero under headline/tagline (`.hero__body`)
 - [x] ds-sarahstogner: boxed editorial split hero (container-width, centered, hairline frame, cream panel)

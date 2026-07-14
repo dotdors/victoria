@@ -279,6 +279,10 @@ a.btn--white:hover {
     background: var(--color-surface);
 }
 
+.hero__image {
+    object-position: right 30%;
+}
+
 /* Panel is cream — remap the overlay-oriented text styles */
 .hero--split .hero__eyebrow {
     color: var(--color-accent);
@@ -354,7 +358,10 @@ body {
 }
 .news-card__date {
     color: var(--color-metadata);
+}
+.news-card__blurb {
     font-style: italic;
+    font-size: 0.88rem;
 }
 
 /* Publication logo cards — hairline separator instead of a color bar */
@@ -394,8 +401,10 @@ body {
     color: var(--color-metadata);
 }
 
-/* Blog and archive pages — text-only cards, no images ever */
-.archive-container .news-card__thumbnail {
+/* Blog and archive pages — text-only cards, no images ever.
+   The Media Archive is the exception: it mirrors the homepage
+   In the Media section, logos included. */
+.archive-container:not(.media-archive) .news-card__thumbnail {
     display: none;
 }
 

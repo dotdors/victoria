@@ -95,6 +95,9 @@ add_action('after_setup_theme', 'dshft_editor_color_palette', 20); // priority 2
 // filter once content is being created natively going forward.
 // ============================================================
 
+// News section: "In the Media" instead of the theme default
+add_filter( 'dsp_news_title', fn() => __( 'In the Media', 'ds-hawkfortexas' ) );
+
 add_filter( 'dsp_show_post_date', function( $show, $post_id ) {
     $cutoff    = strtotime( '2026-04-24' );
     $post_date = get_post_time( 'U', false, $post_id );

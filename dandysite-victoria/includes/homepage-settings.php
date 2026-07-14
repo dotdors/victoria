@@ -30,6 +30,8 @@
  *   dsp_hp_cta_btn{1-3}_style     string  'solid' | 'outline'
  *                                         (If no button options have ever been saved, the theme's
  *                                         default Volunteer/Donate/Stay Informed set is shown.)
+ *   dsp_hp_articles_view_all_url  string  URL for the Articles section's View All button;
+ *                                         '' = default (the blog page, or /blog/)
  *   dsp_hp_media_kit_id           int     attachment ID of the downloadable media kit (0 = none).
  *                                         When set, a "Download Media Kit" link renders at the
  *                                         bottom of the Get Involved / CTA section.
@@ -194,6 +196,11 @@ function dsp_hp_save_settings() {
     }
     if ( isset( $_POST['dsp_hp_cta_text'] ) ) {
         update_option( 'dsp_hp_cta_text', sanitize_textarea_field( wp_unslash( $_POST['dsp_hp_cta_text'] ) ) );
+    }
+
+    // Articles section View All URL
+    if ( isset( $_POST['dsp_hp_articles_view_all_url'] ) ) {
+        update_option( 'dsp_hp_articles_view_all_url', esc_url_raw( wp_unslash( $_POST['dsp_hp_articles_view_all_url'] ) ) );
     }
 
     // CTA buttons (3 slots)
@@ -413,6 +420,11 @@ function dsp_hp_settings_page() {
                 <strong>' . esc_html__( 'Categories to include:', 'dandysite-victoria' ) . '</strong>
                 <p class="description" style="margin-bottom:8px;">' . esc_html__( 'Default: all categories except "In the News".', 'dandysite-victoria' ) . '</p>
                 ' . $cat_checkboxes_articles . '
+                <p></p>
+                <label style="display:block;">' . esc_html__( 'View All button links to:', 'dandysite-victoria' ) . '<br>
+                    <input type="text" name="dsp_hp_articles_view_all_url" value="' . esc_attr( get_option( 'dsp_hp_articles_view_all_url', '' ) ) . '" class="regular-text" placeholder="' . esc_attr__( 'Default: the blog page', 'dandysite-victoria' ) . '">
+                </label>
+                <p class="description">' . esc_html__( 'Full URL or a path like /newsletter/. Leave blank for the default (your Posts page, or /blog/).', 'dandysite-victoria' ) . '</p>
             ' );
 
             // ---- In the News ----
