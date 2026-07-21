@@ -84,9 +84,14 @@ $media_kit_label = apply_filters( 'dsp_media_kit_label', __( 'Download Media Kit
         <div class="get-involved-actions">
             <?php foreach ( $actions as $action ) :
                 $style = isset( $action['style'] ) ? ' ' . esc_attr( $action['style'] ) : '';
+                $email = dsp_mailto_email( $action['url'] );
             ?>
             <a href="<?php echo esc_url( $action['url'] ); ?>"
-               class="btn<?php echo $style; ?>">
+               class="btn<?php echo $style; ?>"
+               <?php if ( $email ) : ?>
+               data-mailto-copy="<?php echo esc_attr( $email ); ?>"
+               title="<?php echo esc_attr( sprintf( __( 'Opens your email app — or click to copy: %s', 'dandysite-victoria' ), $email ) ); ?>"
+               <?php endif; ?>>
                 <?php echo esc_html( $action['label'] ); ?>
             </a>
             <?php endforeach; ?>

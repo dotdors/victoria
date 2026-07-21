@@ -336,6 +336,59 @@
     outline-offset: 3px;
 }
 
+/* =====================================================================
+   HERO ENTRANCE ANIMATION
+   First-visit welcome moment — .hero-reveal/.is-visible are added by
+   assets/js/main.js (initHeroReveal), so nothing is hidden without
+   JS. Image gets a soft zoom+fade settle; text staggers in just
+   behind it. Runs once on load, not on scroll — the hero is already
+   in view, so this is separate from the .reveal scroll system in
+   style.css. .hero__overlay is intentionally left out so the
+   legibility gradient is always present, even mid-animation.
+   ===================================================================== */
+
+.hero-reveal .hero__bg,
+.hero-reveal .hero__image {
+    opacity: 0;
+    transform: scale(1.045);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hero-reveal .hero__eyebrow,
+.hero-reveal .hero__logo-link,
+.hero-reveal .hero__headline,
+.hero-reveal .hero__tagline,
+.hero-reveal .hero__body,
+.hero-reveal .hero__cta {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hero-reveal .hero__eyebrow   { transition-delay: 0.05s; }
+.hero-reveal .hero__logo-link { transition-delay: 0.1s; }
+.hero-reveal .hero__headline  { transition-delay: 0.15s; }
+.hero-reveal .hero__tagline   { transition-delay: 0.22s; }
+.hero-reveal .hero__body      { transition-delay: 0.3s; }
+.hero-reveal .hero__cta       { transition-delay: 0.38s; }
+
+.hero-reveal.is-visible .hero__bg,
+.hero-reveal.is-visible .hero__image {
+    opacity: 1;
+    transform: scale(1);
+}
+.hero-reveal.is-visible .hero__eyebrow,
+.hero-reveal.is-visible .hero__logo-link,
+.hero-reveal.is-visible .hero__headline,
+.hero-reveal.is-visible .hero__tagline,
+.hero-reveal.is-visible .hero__body,
+.hero-reveal.is-visible .hero__cta {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 
 /* =====================================================================
    FULL BLEED LAYOUT

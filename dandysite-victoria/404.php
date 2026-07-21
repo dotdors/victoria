@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 get_header(); ?>
 
 <div class="container">
-    <div class="error-404" style="text-align:center; padding: var(--spacing-2xl) 0; max-width:560px; margin:0 auto;">
+    <div class="error-404" style="text-align:center; max-width:560px; margin:0 auto;">
 
         <h1 style="font-size:6rem; line-height:1; margin-bottom:0.25rem; color:var(--color-primary);">404</h1>
         <p style="font-size:1.25rem; color:var(--color-text-light); margin-bottom:var(--spacing-lg);">

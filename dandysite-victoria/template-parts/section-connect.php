@@ -13,8 +13,14 @@
  * Social icons reuse the [ds_socials] platform registry — any platform
  * with a saved URL in Theme Settings → Social Links appears automatically.
  *
+ * Copy-to-clipboard fallback: mailto: links do nothing if the visitor
+ * has no mail client configured. The data-mailto-copy attribute below
+ * is picked up by assets/js/main.js to copy the address to the
+ * clipboard on click (in addition to, not instead of, the mailto
+ * navigation) and show a brief confirmation toast.
+ *
  * Future: optional contact form can replace the email link — planned,
- * starting with the simple mailto approach.
+ * starting with the mailto + clipboard-fallback approach.
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -43,7 +49,10 @@ if ( ! $email && ! $socials && ! $text ) return;
         <?php endif; ?>
 
         <?php if ( $email ) : ?>
-        <a class="section-connect__email" href="mailto:<?php echo esc_attr( antispambot( $email ) ); ?>">
+        <a class="section-connect__email"
+           href="mailto:<?php echo esc_attr( antispambot( $email ) ); ?>"
+           data-mailto-copy="<?php echo esc_attr( $email ); ?>"
+           title="<?php echo esc_attr( sprintf( __( 'Opens your email app — or click to copy: %s', 'dandysite-victoria' ), $email ) ); ?>">
             <?php echo esc_html( antispambot( $email ) ); ?>
         </a>
         <?php endif; ?>

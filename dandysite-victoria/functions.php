@@ -601,3 +601,23 @@ function victoria_register_footer_widgets() {
     ]);
 }
 add_action('widgets_init', 'victoria_register_footer_widgets');
+
+/**
+ * Mailto Copy-to-Clipboard Fallback
+ *
+ * mailto: links do nothing if the visitor's browser/OS has no mail
+ * client configured, with no visible error. Any link or button whose
+ * URL is a mailto: link gets a data-mailto-copy attribute (handled by
+ * assets/js/main.js) so the address is copied to the clipboard on
+ * click as a silent backup, plus a title attribute so the address is
+ * visible on hover. The mailto: navigation itself is left untouched.
+ */
+function dsp_mailto_email( $url ) {
+    $url = trim( (string) $url );
+    if ( 0 !== stripos( $url, 'mailto:' ) ) {
+        return '';
+    }
+    $email = substr( $url, 7 );
+    $email = strtok( $email, '?' ); // drop ?subject=... etc.
+    return sanitize_email( rawurldecode( $email ) );
+}

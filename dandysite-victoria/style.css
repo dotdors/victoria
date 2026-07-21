@@ -123,6 +123,21 @@ body {
 body.loaded {
   opacity: 1;
 }
+/* ===== REDUCED MOTION ===== */
+/* Applies to every animation/transition in this file (and anything a
+   site plugin adds), present and future — anyone with this OS/browser
+   preference set gets instant state changes instead of motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-delay: 0s !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 /* ===== BUTTONS — see .btn block in Homepage Section Components ===== */
 /* ===== TYPOGRAPHY ===== */
 h1,
@@ -399,11 +414,21 @@ b {
   padding: var(--spacing-2xl) 0;
   min-height: 60vh;
 }
-/* Archive, blog, search pages manage their own padding via .archive-container */
-body.archive .site-main,
-body.blog .site-main,
-body.search .site-main {
-  padding: 0;
+/* ===== SCROLL REVEAL ===== */
+/* Progressive enhancement: assets/js/main.js adds .reveal to homepage
+   sections and news/issue cards, then adds .is-visible once each one
+   scrolls into view. .reveal is ONLY ever added by that script, so
+   nothing is hidden if JS is disabled or IntersectionObserver isn't
+   supported — content just renders normally. */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 .page-header {
   text-align: center;
@@ -748,6 +773,10 @@ a.btn:hover {
     opacity: 0.88;
     transform: translateY(-1px);
     text-decoration: none;
+}
+.btn:active,
+a.btn:active {
+    transform: translateY(-1px) scale(0.98);
 }
 .btn--outline {
     background: transparent;
@@ -1234,6 +1263,35 @@ a.btn--outline-white:hover {
     transform: translateY(-2px);
 }
 
+/* ---- Mailto copy-to-clipboard toast ---- */
+/* Confirmation shown when a mailto: link/button is clicked — see
+   assets/js/main.js initMailtoCopy(). One shared toast, reused for
+   the connect-section email link and any Get Involved / CTA button
+   whose URL is a mailto: link. */
+
+.dsp-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 2rem;
+    transform: translate(-50%, 0.5rem);
+    background: var(--color-primary);
+    color: #ffffff;
+    padding: 0.65rem 1.25rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    max-width: calc(100vw - 2rem);
+    text-align: center;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 9999;
+}
+.dsp-toast.is-visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
 /* ---- Get Involved / CTA section ---- */
 
 .section-get-involved {
@@ -1454,6 +1512,9 @@ a.btn--outline-white:hover {
 .entry-header {
     margin-bottom: var(--spacing-lg);
 }
+body.page .entry-header {
+    text-align: center;
+}
 .entry-meta {
     font-size: var(--font-size-small);
     color: var(--color-text-light);
@@ -1478,6 +1539,33 @@ a.btn--outline-white:hover {
     padding-bottom: var(--spacing-2xl);
     border-bottom: 1px solid var(--color-border);
 }
+/* Sliding underline for inline body links — replaces the plain
+   browser-underline + opacity dim from the base a:hover rule.
+   :not(.btn) so shortcode/CTA buttons embedded in post content
+   aren't affected. */
+.entry-content a:not(.btn) {
+    position: relative;
+    text-decoration: none;
+}
+.entry-content a:not(.btn)::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 100%;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.entry-content a:not(.btn):hover {
+    text-decoration: none;
+    opacity: 1;
+}
+.entry-content a:not(.btn):hover::after {
+    transform: scaleX(1);
+}
 .entry-footer {
     margin-top: var(--spacing-lg);
     padding-top: var(--spacing-lg);
@@ -1485,9 +1573,13 @@ a.btn--outline-white:hover {
 
 /* ---- Archive / category pages ---- */
 
-.archive-container {
-    padding: var(--spacing-2xl) 0;
-}
+/* .archive-container no longer sets padding — .site-main now handles
+   top/bottom spacing consistently on every page type (was previously
+   zeroed and re-added here just for archive/blog/search, which is
+   what caused the double-padding on the Media Archive page: that
+   page never matched body.archive/.blog/.search, so site-main's
+   padding stayed AND this rule added its own on top of it). Class
+   kept in markup as a hook in case it's needed again. */
 .archive-header {
     margin-bottom: var(--spacing-2xl);
     text-align: center;

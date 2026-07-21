@@ -30,7 +30,6 @@ The site plugin handles:
 dandysite-victoria/
 ├── assets/
 │   ├── css/
-│   │   ├── style.css          # Compiled from style.less — DO NOT edit directly
 │   │   ├── header.css         # Header system styles + search overlay
 │   │   ├── footer.css         # Footer styles
 │   │   ├── homepage.css       # Homepage section base styles
@@ -70,8 +69,7 @@ dandysite-victoria/
 ├── front-page.php             # Homepage — filterable section list
 ├── single-dsp_position.php    # Single position/issue template
 ├── archive-dsp_endorsement.php   # Full endorsements listing
-├── style.less                 # Source file — edit this, compile to style.css
-├── style.css                  # Theme header + compiled CSS
+├── style.css                  # Theme header + all styles — edited directly (LESS pipeline abandoned; style.less is stale, kept for history only)
 ├── functions.php
 ├── header.php
 ├── footer.php
@@ -95,19 +93,16 @@ dandysite-victoria/
 
 ### How to Override in a Site Plugin
 
-In `ds-[sitename]/assets/css/site.less` (or `site.css`):
+In `ds-[sitename]/assets/css/site.css`:
 
-```less
-// Define campaign-specific vars
-@campaign-primary: #C8102E;
-@campaign-dark:    #1a1a2e;
-
-// Override semantic roles
+```css
+/* Override semantic roles directly with hex values —
+   plain CSS custom properties, no LESS variables/build step */
 :root {
-    --color-primary:    @campaign-dark;
-    --color-secondary:  @campaign-primary;
-    --color-accent:     @campaign-primary;
-    --color-button-bg:  @campaign-primary;
+    --color-primary:    #1a1a2e;
+    --color-secondary:  #C8102E;
+    --color-accent:     #C8102E;
+    --color-button-bg:  #C8102E;
 }
 ```
 
@@ -390,8 +385,7 @@ ds-sitename/
 ├── ds-sitename.php        # Plugin entry — enqueues assets, palette override
 ├── assets/
 │   ├── css/
-│   │   ├── site.css       # Compiled — loaded after Victoria
-│   │   └── site.less      # Source
+│   │   └── site.css       # Plain CSS, no build step — loaded after Victoria
 │   ├── js/site.js
 │   └── images/            # Campaign logo, candidate photos
 ├── includes/              # Site-specific includes (custom meta, integrations)

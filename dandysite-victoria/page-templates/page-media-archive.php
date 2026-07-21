@@ -40,7 +40,7 @@ $media_query = new WP_Query( [
 ] );
 ?>
 
-<main class="site-main archive-container media-archive">
+<div class="archive-container media-archive">
     <div class="container">
 
         <header class="archive-header">
@@ -83,6 +83,6 @@ $media_query = new WP_Query( [
         <?php endif; ?>
 
     </div>
-</main>
+</div>
 
 <?php get_footer(); ?>

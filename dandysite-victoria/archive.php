@@ -80,6 +80,8 @@ get_header(); ?>
                         </a>
                     </h3>
 
+                    <?php dsp_card_blurb(); ?>
+
                     <?php if ( apply_filters( 'dsp_show_post_date', true, get_the_ID() ) ) : ?>
                     <div class="news-card__date"><?php echo esc_html( get_the_date() ); ?></div>
                     <?php endif; ?>
