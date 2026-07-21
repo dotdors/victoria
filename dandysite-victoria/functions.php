@@ -322,7 +322,19 @@ function dsp_register_theme_settings() {
         'dsp-theme-settings',
         'dsp_features_section'
     );
-
+// Disable subtle animations
+    register_setting( 'dsp_theme_settings', 'dsp_disable_animations', [
+        'type'              => 'string',
+        'sanitize_callback' => 'sanitize_text_field',
+        'default'           => '',
+    ] );
+    add_settings_field(
+        'dsp_disable_animations',
+        __( 'Animations', 'dandysite-victoria' ),
+        'dsp_disable_animations_field',
+        'dsp-theme-settings',
+        'dsp_features_section'
+    );
     // External article link behavior
     register_setting( 'dsp_theme_settings', 'dsp_external_link_behavior', [
         'type'              => 'string',
@@ -364,7 +376,18 @@ function dsp_single_featured_image_field() {
     </p>
     <?php
 }
-
+function dsp_disable_animations_field() {
+    $value = get_option( 'dsp_disable_animations', '' );
+    ?>
+    <label>
+        <input type="checkbox" name="dsp_disable_animations" value="1" <?php checked( $value, '1' ); ?> />
+        <?php esc_html_e( 'Disable subtle animations (scroll reveals, hero entrance)', 'dandysite-victoria' ); ?>
+    </label>
+    <p class="description">
+        <?php esc_html_e( 'Turns off decorative motion sitewide — same effect as a visitor\'s reduced-motion preference.', 'dandysite-victoria' ); ?>
+    </p>
+    <?php
+}
 function dsp_bio_page_slug_field() {
     $slug  = get_option( 'dsp_bio_page_slug', 'about' );
     $pages = get_pages( [ 'post_status' => 'publish' ] );
@@ -423,6 +446,17 @@ function dsp_theme_settings_page() {
 function dsp_features_section_callback() {
     echo '<p>' . esc_html__('Theme-level settings. Site-specific options live in the site plugin (ds-[sitename]).', 'dandysite-victoria') . '</p>';
 }
+/**
+ * Add a body class when subtle animations are disabled via Theme Settings,
+ * so style.css can kill them the same way it does for prefers-reduced-motion.
+ */
+function dsp_animations_body_class( $classes ) {
+    if ( '1' === get_option( 'dsp_disable_animations', '' ) ) {
+        $classes[] = 'animations-disabled';
+    }
+    return $classes;
+}
+add_filter( 'body_class', 'dsp_animations_body_class' );
 
 // ===== FAVICON =====
 // Place favicon files (realfavicongenerator.net set) in the WordPress root

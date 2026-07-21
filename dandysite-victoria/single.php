@@ -36,6 +36,9 @@ get_header(); ?>
                     <time datetime="<?php echo esc_attr( get_the_date( 'c' ) ); ?>">
                         <?php echo esc_html( get_the_date() ); ?>
                     </time>
+                    <span class="entry-share">
+                        <?php dandy_share(); ?>
+                    </span>
                 </div>
                 <?php endif; ?>
 
@@ -56,6 +59,7 @@ get_header(); ?>
             <div class="entry-content content-wrapper">
                 <?php the_content(); ?>
                 <?php wp_link_pages(); ?>
+                <?php dandy_share(); ?>
             </div>
 
             <footer class="entry-footer">

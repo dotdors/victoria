@@ -138,6 +138,19 @@ body.loaded {
     scroll-behavior: auto !important;
   }
 }
+
+/* Manual kill switch — Theme Settings → "Disable subtle animations".
+   Same effect as the reduced-motion query above, triggered by a body
+   class instead of an OS/browser preference. */
+body.animations-disabled *,
+body.animations-disabled *::before,
+body.animations-disabled *::after {
+  animation-delay: 0s !important;
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
 /* ===== BUTTONS — see .btn block in Homepage Section Components ===== */
 /* ===== TYPOGRAPHY ===== */
 h1,
@@ -480,6 +493,7 @@ b {
   font-size: var(--font-size-small);
   color: var(--color-text-light);
 }
+
 .read-more {
   display: inline-block;
   color: var(--color-accent);
@@ -1519,7 +1533,11 @@ body.page .entry-header {
     font-size: var(--font-size-small);
     color: var(--color-text-light);
     margin-top: 0.5rem;
+        display: flex;
+    gap: 2em;
 }
+
+
 .entry-featured-image {
     margin-bottom: var(--spacing-lg);
     border-radius: var(--border-radius);

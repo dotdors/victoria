@@ -1,0 +1,59 @@
+.dandy-share {
+
+--dandy-accent: var(--color-accent, #3b82f6);
+--dandy-primary: var(--color-primary, #222);
+
+    display:inline-flex;
+    align-items:center;
+    gap:.45rem;
+
+    padding:0;
+
+    border:0px solid;
+
+    background:transparent;
+
+    color:var(--dandy-accent);
+
+    border-radius:999px;
+
+    font:inherit;
+
+    cursor:pointer;
+
+    transition:.2s ease;
+}
+
+.dandy-share:hover {
+
+    color:var(--dandy-primary);
+ background:transparent;
+  
+
+}
+
+.dandy-share svg {
+
+    width:18px;
+    height:18px;
+
+}
+
+.dandy-share svg {
+    width: 1rem;
+    height: 1rem;
+    transition: transform .2s ease;
+    transform-origin: center;
+}
+
+.dandy-share span {
+    transition: transform .2s ease, color .2s ease;
+}
+
+.dandy-share:hover svg {
+    transform: rotate(15deg) scale(1.08);
+}
+
+.dandy-share:hover span {
+    transform: translateX(2px);
+}
