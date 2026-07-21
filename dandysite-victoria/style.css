@@ -1495,10 +1495,11 @@ a.btn--outline-white:hover {
 /* ---- Single post ---- */
 
 .single-post-container {
-    padding: var(--spacing-2xl) 0;
+    padding: 0 1em;
     max-width: var(--content-max-width);
     margin: 0 auto;
 }
+
 .entry-categories {
     display: flex;
     flex-wrap: wrap;

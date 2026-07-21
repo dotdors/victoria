@@ -22,13 +22,15 @@ function dandy_share( array $args = [] ) {
 
     ?>
 
+    <div class="dandy-share-wrap">
+
     <button
         class="dandy-share"
-        hidden
         data-title="<?php echo esc_attr( $share['title'] ); ?>"
         data-text="<?php echo esc_attr( $share['text'] ); ?>"
         data-url="<?php echo esc_url( $share['url'] ); ?>"
         type="button"
+        aria-expanded="false"
     >
 
         <svg
@@ -49,6 +51,33 @@ function dandy_share( array $args = [] ) {
         <span>Share</span>
 
     </button>
+
+
+    <div class="dandy-share-menu" hidden>
+
+        <a class="dandy-share-facebook" target="_blank" rel="noopener">
+            Facebook
+        </a>
+
+        <a class="dandy-share-x" target="_blank" rel="noopener">
+            X
+        </a>
+
+        <a class="dandy-share-bluesky" target="_blank" rel="noopener">
+            Bluesky
+        </a>
+
+        <a class="dandy-share-email">
+            Email
+        </a>
+
+        <button class="dandy-share-copy" type="button">
+            Copy link
+        </button>
+
+    </div>
+
+</div>
 
     <?php
 }
