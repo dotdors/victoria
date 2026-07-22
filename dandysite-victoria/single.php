@@ -37,7 +37,7 @@ get_header(); ?>
                         <?php echo esc_html( get_the_date() ); ?>
                     </time>
                     <span class="entry-share">
-                        <?php dandy_share(); ?>
+                        <?php if ( function_exists( 'dandy_share' ) ) : dandy_share(); endif; ?>
                     </span>
                 </div>
                 <?php endif; ?>
@@ -59,7 +59,7 @@ get_header(); ?>
             <div class="entry-content content-wrapper">
                 <?php the_content(); ?>
                 <?php wp_link_pages(); ?>
-                <?php dandy_share(); ?>
+                <?php if ( function_exists( 'dandy_share' ) ) : dandy_share(); endif; ?>
             </div>
 
             <footer class="entry-footer">

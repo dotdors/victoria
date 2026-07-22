@@ -35,64 +35,6 @@
         });
     }
 
-    // Mobile menu toggle (enhanced)
-    function initMobileMenu() {
-        const menuToggle = document.querySelector('.mobile-menu-toggle');
-        const navigation = document.querySelector('.main-navigation');
-        const body = document.body;
-        
-        if (menuToggle && navigation) {
-            menuToggle.addEventListener('click', function() {
-                const isOpen = navigation.classList.contains('mobile-menu-open');
-                
-                if (isOpen) {
-                    // Close menu
-                    navigation.classList.remove('mobile-menu-open');
-                    menuToggle.classList.remove('active');
-                    body.classList.remove('mobile-menu-open');
-                    menuToggle.setAttribute('aria-expanded', 'false');
-                } else {
-                    // Open menu
-                    navigation.classList.add('mobile-menu-open');
-                    menuToggle.classList.add('active');
-                    body.classList.add('mobile-menu-open');
-                    menuToggle.setAttribute('aria-expanded', 'true');
-                }
-            });
-            
-            // Close menu when clicking on a link
-            const menuLinks = navigation.querySelectorAll('a');
-            menuLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    navigation.classList.remove('mobile-menu-open');
-                    menuToggle.classList.remove('active');
-                    body.classList.remove('mobile-menu-open');
-                    menuToggle.setAttribute('aria-expanded', 'false');
-                });
-            });
-            
-            // Close menu on escape key
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && navigation.classList.contains('mobile-menu-open')) {
-                    navigation.classList.remove('mobile-menu-open');
-                    menuToggle.classList.remove('active');
-                    body.classList.remove('mobile-menu-open');
-                    menuToggle.setAttribute('aria-expanded', 'false');
-                }
-            });
-            
-            // Close menu on window resize if desktop
-            window.addEventListener('resize', function() {
-                if (window.innerWidth > 768 && navigation.classList.contains('mobile-menu-open')) {
-                    navigation.classList.remove('mobile-menu-open');
-                    menuToggle.classList.remove('active');
-                    body.classList.remove('mobile-menu-open');
-                    menuToggle.setAttribute('aria-expanded', 'false');
-                }
-            });
-        }
-    }
-
     // Lazy loading for images (modern browsers)
     function initLazyLoading() {
         if ('IntersectionObserver' in window) {
@@ -251,7 +193,6 @@
     // Initialize all functions
     ready(function() {
         initSmoothScrolling();
-        initMobileMenu();     // NOTE: header.js handles the primary hamburger — this covers legacy markup only
         initLazyLoading();
         initProjectFilters();
         initMailtoCopy();

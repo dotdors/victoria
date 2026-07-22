@@ -247,25 +247,6 @@ b {
   z-index: 100;
   transition: all 0.3s ease;
 }
-.site-header.scrolled {
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-}
-.site-header.header-hidden {
-  transform: translateY(-100%);
-}
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.site-branding {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-}
 .custom-logo-link {
   display: block;
   line-height: 0;
@@ -291,136 +272,15 @@ b {
   color: var(--color-primary);
   text-decoration: none;
 }
-.site-description {
-  color: var(--color-text-light);
-  font-size: var(--font-size-small);
-  margin: 0;
-}
-/* ===== MOBILE MENU TOGGLE ===== */
-.mobile-menu-toggle {
-  display: none;
-  background: none;
-  border: none;
-  padding: var(--spacing-sm);
-  cursor: pointer;
-  z-index: 1001;
-}
-.mobile-menu-toggle.active .hamburger-line:nth-child(1) {
-  transform: rotate(45deg) translate(5px, 5px);
-}
-.mobile-menu-toggle.active .hamburger-line:nth-child(2) {
-  opacity: 0;
-  transform: scaleX(0);
-}
-.mobile-menu-toggle.active .hamburger-line:nth-child(3) {
-  transform: rotate(-45deg) translate(7px, -6px);
-}
-.hamburger {
-  display: block;
-  width: 24px;
-  height: 18px;
-  position: relative;
-}
-.hamburger-line {
-  display: block;
-  width: 100%;
-  height: 2px;
-  background-color: var(--color-primary);
-  margin: 4px 0;
-  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  transform-origin: center;
-}
-/* ===== NAVIGATION ===== */
-.main-navigation {
-  display: block;
-}
-.main-navigation ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  gap: var(--spacing-lg);
-}
-.main-navigation a {
-  color: var(--color-text);
-  font-weight: 700;
-  font-size: var(--font-size-large);
-  padding: var(--spacing-sm) 0;
-  border-bottom: 3px solid transparent;
-  transition: var(--transition);
-  display: block;
-}
-.main-navigation a:hover {
-  color: var(--color-accent);
-  border-bottom-color: var(--color-accent);
-  text-decoration: none;
-}
-.main-navigation .current-menu-item > a {
-  color: var(--color-accent);
-  border-bottom-color: var(--color-accent);
-  text-decoration: none;
-}
-/* Mobile Navigation */
-@media (max-width: 768px) {
-  .mobile-menu-toggle {
-    display: block;
-  }
-  .header-content {
-    position: relative;
-  }
-  .main-navigation {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: var(--color-background);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transform: translateY(-100%);
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    z-index: 1000;
-  }
-  .main-navigation.mobile-menu-open {
-    transform: translateY(0);
-    opacity: 1;
-    visibility: visible;
-  }
-  .main-navigation ul {
-    flex-direction: column;
-    padding: var(--spacing-lg);
-    gap: 0;
-  }
-  .main-navigation li {
-    border-bottom: 1px solid var(--color-border);
-  }
-  .main-navigation li:last-child {
-    border-bottom: none;
-  }
-  .main-navigation a {
-    padding: var(--spacing-md) 0;
-    font-size: var(--font-size-base);
-    border-bottom: none;
-    position: relative;
-  }
-  .main-navigation a:hover,
-  .main-navigation a.current-menu-item {
-    color: var(--color-accent);
-    border-bottom: none;
-  }
-  .main-navigation a:hover::after,
-  .main-navigation a.current-menu-item::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    height: 2px;
-    background: var(--color-accent);
-  }
-  body.mobile-menu-open {
-    overflow: hidden;
-  }
+/* body.mobile-menu-open is toggled by the CURRENT header (header.js) —
+   this is the one rule from the old mobile-nav system that's still
+   live. Everything else here (.mobile-menu-toggle, .hamburger*,
+   .main-navigation and its mobile media-query variant) was the old
+   header/nav system, fully superseded by .header-hamburger/
+   .hamburger-bar/.header-nav in assets/css/header.css. Removed
+   2026-07-21. */
+body.mobile-menu-open {
+  overflow: hidden;
 }
 /* ===== MAIN CONTENT ===== */
 .site-main {
@@ -461,45 +321,11 @@ b {
   height: 4px;
   background: var(--color-accent);
 }
-/* ===== CARDS (Reusable Component) ===== */
-.card {
-  background: var(--color-surface);
-  border-radius: var(--border-radius);
-  overflow: hidden;
-  box-shadow: var(--box-shadow);
-  transition: var(--transition);
-}
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
-}
-/* ===== POSTS/BLOG ===== */
-.post-grid {
-  display: grid;
-  gap: var(--spacing-xl);
-}
-.post-card {
-  border-bottom: 1px solid var(--color-border);
-  padding-bottom: var(--spacing-lg);
-}
-.post-card:last-child {
-  border-bottom: none;
-}
-.post-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-sm);
-  font-size: var(--font-size-small);
-  color: var(--color-text-light);
-}
-
-.read-more {
-  display: inline-block;
-  color: var(--color-accent);
-  font-weight: 700;
-  margin-top: var(--spacing-sm);
-}
+/* ===== POSTS/BLOG =====
+   .card/.post-grid/.post-card/.post-meta/.read-more removed
+   2026-07-21 — unused anywhere in the theme; likely inherited from
+   Dandysite Jane and never adopted by Victoria's card system
+   (.news-card/.issue-card/.endorsement-card, defined further down). */
 /* ===== FILTERS ===== */
 .project-filter {
   margin-bottom: var(--spacing-xl);
@@ -631,12 +457,6 @@ b {
   .site-header {
     padding: var(--spacing-md) 0;
   }
-  .header-content {
-    flex-wrap: nowrap;
-  }
-  .site-branding {
-    gap: var(--spacing-sm);
-  }
   .custom-logo {
     max-height: 40px;
     max-width: 150px;
@@ -675,10 +495,6 @@ b {
   }
   .pagination {
     flex-wrap: wrap;
-  }
-  .site-branding {
-    flex-direction: column;
-    gap: var(--spacing-xs);
   }
   .custom-logo {
     max-height: 35px;

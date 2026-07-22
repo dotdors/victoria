@@ -28,7 +28,7 @@ function dsp_register_endorsements_cpt() {
         ],
         'public'            => false,
         'show_ui'           => true,
-        'show_in_menu'      => true,
+        'show_in_menu'      => '1' === get_option( 'dsp_show_endorsements_menu', '1' ),
         'show_in_rest'      => false,  // no block editor — meta boxes save via classic $_POST
         'supports'          => ['title', 'thumbnail'],
         'menu_icon'         => 'dashicons-awards',

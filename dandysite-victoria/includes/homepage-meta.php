@@ -45,7 +45,7 @@ add_action( 'do_meta_boxes', function( $post_type, $context ) {
     $is_front      = $post_id && $post_id === $front_page_id;
     $template      = $post_id ? get_page_template_slug( $post_id ) : '';
     $has_template  = ! empty( $template );
-    $dev_mode      = (bool) get_option( 'dswg_developer_mode', 1 );
+    $dev_mode      = dsp_is_dev_mode();
 
     if ( ! $is_front && ! $has_template && ! $dev_mode ) {
         remove_meta_box( 'dsp_homepage_hero', 'page', $context );

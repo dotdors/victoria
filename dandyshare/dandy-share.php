@@ -2,7 +2,7 @@
 /**
  * Plugin Name: DandyShare
  * Description: Lightweight native Web Share button for WordPress.
- * Version: 0.3.0
+ * Version: 0.2.0
  * Author: Dandysite
  * License: GPL2+
  * Text Domain: dandy-share

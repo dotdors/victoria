@@ -274,6 +274,32 @@ function dsp_add_theme_settings() {
 add_action('admin_menu', 'dsp_add_theme_settings');
 
 function dsp_register_theme_settings() {
+
+    // Developer Mode — always registered/visible. This is the switch
+    // that reveals everything else, so it can't itself be hidden by it.
+    add_settings_section(
+        'dsp_dev_mode_section',
+        __('Developer Mode', 'dandysite-victoria'),
+        '__return_false',
+        'dsp-theme-settings'
+    );
+    register_setting( 'dsp_theme_settings', 'dswg_developer_mode', [
+        'type'              => 'string',
+        'sanitize_callback' => 'sanitize_text_field',
+        'default'           => '1',
+    ] );
+    add_settings_field(
+        'dswg_developer_mode',
+        __( 'Developer Mode', 'dandysite-victoria' ),
+        'dsp_developer_mode_field',
+        'dsp-theme-settings',
+        'dsp_dev_mode_section'
+    );
+
+    if ( ! dsp_is_dev_mode() ) {
+        return;
+    }
+
     add_settings_section(
         'dsp_features_section',
         __('Theme Features', 'dandysite-victoria'),
@@ -348,8 +374,75 @@ function dsp_register_theme_settings() {
         'dsp-theme-settings',
         'dsp_features_section'
     );
+
+    // Content type menu visibility — per-CPT, defaults to on so
+    // existing sites don't lose a menu item they're already using.
+    register_setting( 'dsp_theme_settings', 'dsp_show_endorsements_menu', [
+        'type'              => 'string',
+        'sanitize_callback' => 'sanitize_text_field',
+        'default'           => '1',
+    ] );
+    add_settings_field(
+        'dsp_show_endorsements_menu',
+        __( 'Endorsements Menu', 'dandysite-victoria' ),
+        'dsp_show_endorsements_menu_field',
+        'dsp-theme-settings',
+        'dsp_features_section'
+    );
+
+    register_setting( 'dsp_theme_settings', 'dsp_show_positions_menu', [
+        'type'              => 'string',
+        'sanitize_callback' => 'sanitize_text_field',
+        'default'           => '1',
+    ] );
+    add_settings_field(
+        'dsp_show_positions_menu',
+        __( 'Issues & Positions Menu', 'dandysite-victoria' ),
+        'dsp_show_positions_menu_field',
+        'dsp-theme-settings',
+        'dsp_features_section'
+    );
 }
 add_action('admin_init', 'dsp_register_theme_settings');
+
+function dsp_developer_mode_field() {
+    $value = get_option( 'dswg_developer_mode', '1' );
+    ?>
+    <label>
+        <input type="checkbox" name="dswg_developer_mode" value="1" <?php checked( $value, '1' ); ?> />
+        <?php esc_html_e( 'Show advanced theme settings and content-type menu controls', 'dandysite-victoria' ); ?>
+    </label>
+    <p class="description">
+        <?php esc_html_e( 'Most day-to-day editors only need Social Links below. Turn this on when you need the rest — bio settings, animations, external link behavior, and the checkboxes that show/hide the Endorsements and Issues & Positions menu items.', 'dandysite-victoria' ); ?>
+    </p>
+    <?php
+}
+
+function dsp_show_endorsements_menu_field() {
+    $value = get_option( 'dsp_show_endorsements_menu', '1' );
+    ?>
+    <label>
+        <input type="checkbox" name="dsp_show_endorsements_menu" value="1" <?php checked( $value, '1' ); ?> />
+        <?php esc_html_e( 'Show the Endorsements menu item, even with Developer Mode off', 'dandysite-victoria' ); ?>
+    </label>
+    <p class="description">
+        <?php esc_html_e( 'Uncheck once a site isn\'t actively using endorsements, so day-to-day editors aren\'t shown a menu item for something empty. Existing endorsement content isn\'t affected either way.', 'dandysite-victoria' ); ?>
+    </p>
+    <?php
+}
+
+function dsp_show_positions_menu_field() {
+    $value = get_option( 'dsp_show_positions_menu', '1' );
+    ?>
+    <label>
+        <input type="checkbox" name="dsp_show_positions_menu" value="1" <?php checked( $value, '1' ); ?> />
+        <?php esc_html_e( 'Show the Issues & Positions menu item, even with Developer Mode off', 'dandysite-victoria' ); ?>
+    </label>
+    <p class="description">
+        <?php esc_html_e( 'Uncheck once a site isn\'t actively using positions, so day-to-day editors aren\'t shown a menu item for something empty. Existing position content isn\'t affected either way.', 'dandysite-victoria' ); ?>
+    </p>
+    <?php
+}
 
 function dsp_bio_section_label_field() {
     $value = get_option( 'dsp_bio_section_label', '' );
@@ -517,6 +610,23 @@ function dsp_get_news_categories() {
 }
 
 /**
+ * Blog index (is_home) was returning one extra post whenever a sticky
+ * post fell outside the natural top-N — core WordPress's own sticky
+ * pinning behavior, which only applies to this specific main query
+ * (category archives, search, and custom WP_Query calls never see
+ * it). Disabling it here keeps the blog index at a flat, predictable
+ * `posts_per_page` count. Chosen deliberately over capping-while-
+ * pinning (see dsp_sticky_first_query() below, which does that for
+ * the homepage teaser sections) — this is a simpler one-line fix for
+ * a page where sticky-pinning isn't being relied on.
+ */
+add_action( 'pre_get_posts', function( $query ) {
+    if ( is_home() && $query->is_main_query() ) {
+        $query->set( 'ignore_sticky_posts', true );
+    }
+} );
+
+/**
  * WP_Query wrapper that floats sticky posts to the front.
  *
  * Custom (secondary) WP_Query ignores stickies entirely, so homepage
@@ -635,6 +745,21 @@ function victoria_register_footer_widgets() {
     ]);
 }
 add_action('widgets_init', 'victoria_register_footer_widgets');
+
+/**
+ * Developer Mode
+ *
+ * Gates rarely-used settings and content-type menu items behind a
+ * single flag, so day-to-day site admins aren't overwhelmed with
+ * options they'll never touch. Reuses `dswg_developer_mode`, an
+ * option that already existed (inherited from the Wine Guy plugin)
+ * but previously had no admin UI — only homepage-meta.php read it
+ * directly. Defaults to on, matching that prior behavior, so nothing
+ * changes for existing sites until someone actively turns it off.
+ */
+function dsp_is_dev_mode() {
+    return (bool) get_option( 'dswg_developer_mode', 1 );
+}
 
 /**
  * Mailto Copy-to-Clipboard Fallback

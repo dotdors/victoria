@@ -29,7 +29,7 @@ function dsp_register_positions_cpt() {
         'public'        => true,
         'has_archive'   => false,
         'show_ui'       => true,
-        'show_in_menu'  => true,
+        'show_in_menu'  => '1' === get_option( 'dsp_show_positions_menu', '1' ),
         'show_in_rest'  => true,
         'rewrite'       => ['slug' => 'issues'],
         'supports'      => ['title', 'editor', 'thumbnail', 'excerpt', 'page-attributes'],
